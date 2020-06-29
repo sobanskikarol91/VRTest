@@ -4,8 +4,10 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace BNG {
-    public class SnapZone : MonoBehaviour {
+namespace BNG
+{
+    public class SnapZone : MonoBehaviour
+    {
 
         /// <summary>
         /// If false, Item will Move back to inventory space if player drops it
@@ -65,130 +67,134 @@ namespace BNG {
         SnapZoneOffset offset;
 
         // Start is called before the first frame update
-        void Start() {
+        void Start()
+        {
             gZone = GetComponent<GrabbablesInTrigger>();
             _scaleTo = ScaleItem;
 
             // Auto Equip item
-            if (HeldItem != null) {
-                GrabGrabbable(HeldItem);
+            if (HeldItem != null)
+            {
+                Snap(HeldItem);
             }
         }
 
+
         // Update is called once per frame
-        void Update() {
+        void Update()
+        {
 
             ClosestGrabbable = getClosestGrabbable();
 
             // Can we grab something
-            if (HeldItem == null && ClosestGrabbable != null) {
+            if (HeldItem == null && ClosestGrabbable != null)
+            {
+                Debug.Log("here");
                 float secondsSinceDrop = Time.time - ClosestGrabbable.LastDropTime;
-                if (secondsSinceDrop < MaxDropTime) {
-                    GrabGrabbable(ClosestGrabbable);
+                if (secondsSinceDrop < MaxDropTime)
+                {
+                    Debug.Log("B");
+                    Snap(ClosestGrabbable);
+                }
+                else if (movingGrabbable == null)
+                {
+                    Debug.Log("Snap");
+                    Snap(ClosestGrabbable);
                 }
             }
 
             // Keep snapped to us or drop
-            if (HeldItem != null) {
-
+            if (HeldItem != null)
+            {
                 // Something picked this up or changed transform parent
-                if (HeldItem.BeingHeld || HeldItem.transform.parent != transform) {
-                    ReleaseAll();
+                if (HeldItem.BeingHeld || HeldItem.transform.parent != transform)
+                {
+                    //   ReleaseAll();
                 }
-                else {
+                else
+                {
                     // Scale Item while inside zone.                                            
                     float localScale = HeldItem.OriginalScale * _scaleTo;
                     HeldItem.transform.localScale = Vector3.Lerp(HeldItem.transform.localScale, new Vector3(localScale, localScale, localScale), Time.deltaTime * 30f);
-                    
+
                     // Make sure this can't be grabbed from the snap zone
-                    if(HeldItem.enabled || (disabledColliders.Count > 0 && disabledColliders[0] != null && disabledColliders[0].enabled)) {
+                    if (HeldItem.enabled || (disabledColliders.Count > 0 && disabledColliders[0] != null && disabledColliders[0].enabled))
+                    {
                         disableGrabbable(HeldItem);
                     }
 
                     // Lock into place
-                    if(offset) {
-                        HeldItem.transform.localPosition = offset.LocalPositionOffset;
-                        HeldItem.transform.localEulerAngles = offset.LocalRotationOffset;
+                    if (offset)
+                    {
+                        //  HeldItem.transform.localPosition = offset.LocalPositionOffset;
+                        //   HeldItem.transform.localEulerAngles = offset.LocalRotationOffset;
                     }
-                    else {
-                        HeldItem.transform.localPosition = Vector3.zero;
-                        HeldItem.transform.localEulerAngles = Vector3.zero;
+                    else
+                    {
+                        //  HeldItem.transform.localPosition = Vector3.zero;
+                        //   HeldItem.transform.localEulerAngles = Vector3.zero;
                     }
-                    
+
                 }
             }
 
             // Can't drop item. Lerp to position if not being held
-            if (!CanDropItem && trackedItem != null && HeldItem == null) {
-                if (!trackedItem.BeingHeld) {
-                    GrabGrabbable(trackedItem);
+            if (!CanDropItem && trackedItem != null && HeldItem == null)
+            {
+                if (!trackedItem.BeingHeld)
+                {
+                    Snap(trackedItem);
                 }
             }
         }
 
-        Grabbable getClosestGrabbable() {
-
+        Grabbable getClosestGrabbable()
+        {
             Grabbable closest = null;
             float lastDistance = 9999f;
 
-            if (gZone == null || gZone.NearbyGrabbables == null) {
+            if (gZone == null || gZone.NearbyGrabbables == null)
+            {
                 return null;
             }
 
-            foreach(var g in gZone.NearbyGrabbables) {
+            foreach (var g in gZone.NearbyGrabbables)
+            {
 
                 // Collider may have been disabled
-                if(g.Key == null) {
+                if (g.Key == null)
+                {
                     continue;
                 }
 
                 float dist = Vector3.Distance(transform.position, g.Value.transform.position);
-                if(dist < lastDistance) {
+
+                if (dist < lastDistance)
+                {
 
                     //  Not allowing secondary grabbables such as slides
-                    if(g.Value.OtherGrabbableMustBeGrabbed != null) {
+                    if (g.Value.OtherGrabbableMustBeGrabbed != null)
+                    {
                         continue;
                     }
 
                     // Don't allow SnapZones in SnapZones
-                    if(g.Value.GetComponent<SnapZone>() != null) {
+                    if (g.Value.GetComponent<SnapZone>() != null)
+                    {
                         continue;
                     }
 
                     // Don't allow InvalidSnapObjects to snap
-                    if (g.Value.CanBeSnappedToSnapZone == false) {
+                    if (g.Value.CanBeSnappedToSnapZone == false)
+                    {
                         continue;
                     }
 
-                    // Must contain transform name
-                    if (OnlyAllowNames != null && OnlyAllowNames.Count > 0) {
-                        string transformName = g.Value.transform.name;
-                        bool matchFound = false;
-                        foreach(var name in OnlyAllowNames) {
-                            if(transformName.Contains(name)) {
-                                matchFound = true;                                
-                            }
-                        }
 
-                        // Not a valid match
-                        if(!matchFound) {
-                            continue;
-                        }
-                    }
-
-                    // Check for name exclusion
-                    if (ExcludeTransformNames != null) {
-                        string transformName = g.Value.transform.name;
-                        foreach (var name in ExcludeTransformNames) {
-                            // Not a valid match
-                            if (transformName.Contains(name)) {
-                                continue;
-                            }
-                        }
-                    }
 
                     // Only valid to snap if being held or recently dropped
-                    if (g.Value.BeingHeld || (Time.time - g.Value.LastDropTime < MaxDropTime)) {
+                    if (g.Value.BeingHeld || (Time.time - g.Value.LastDropTime < MaxDropTime))
+                    {
                         closest = g.Value;
                         lastDistance = dist;
                     }
@@ -198,14 +204,17 @@ namespace BNG {
             return closest;
         }
 
-        public void GrabGrabbable(Grabbable grab) {
+        public void Snap(Grabbable grab)
+        {
 
             // Grab is already in Snap Zone
-            if(grab.transform.parent != null && grab.transform.parent.GetComponent<SnapZone>() != null) {
+            if (grab.transform.parent != null && grab.transform.parent.GetComponent<SnapZone>() != null)
+            {
                 return;
             }
 
-            if(HeldItem != null) {
+            if (HeldItem != null)
+            {
                 ReleaseAll();
             }
 
@@ -213,44 +222,78 @@ namespace BNG {
 
             // Set scale factor            
             // Use SnapZoneScale if specified
-            if (grab.GetComponent<SnapZoneScale>()) {
+            if (grab.GetComponent<SnapZoneScale>())
+            {
                 _scaleTo = grab.GetComponent<SnapZoneScale>().Scale;
             }
-            else {
+            else
+            {
                 _scaleTo = ScaleItem;
             }
 
             // Is there an offset to apply?
-            SnapZoneOffset off = grab.GetComponent<SnapZoneOffset>();
-            if(off) {
-                offset = off;
-            }
-            else {
-                offset = grab.gameObject.AddComponent<SnapZoneOffset>();
-                offset.LocalPositionOffset = Vector3.zero;
-                offset.LocalRotationOffset = Vector3.zero;
-            }
+            //SnapZoneOffset off = grab.GetComponent<SnapZoneOffset>();
+            //if (off)
+            //{
+            //    offset = off;
+            //}
+            //else
+            //{
+            //    offset = grab.gameObject.AddComponent<SnapZoneOffset>();
+            //    offset.LocalPositionOffset = Vector3.zero;
+            //    offset.LocalRotationOffset = Vector3.zero;
+            //}
 
             // Disable the grabbable. This is picked up through a Grab Action
             disableGrabbable(grab);
 
-            grab.transform.parent = transform;
+            Move(grab);
+
 
             // Call event
-            if (OnSnapEvent != null) {
+            if (OnSnapEvent != null)
+            {
                 OnSnapEvent.Invoke(grab);
-            }
-
-            if (SoundOnSnap) {
-                VRUtils.Instance.PlaySpatialClipAt(SoundOnSnap, transform.position, 0.75f);
             }
         }
 
-        void disableGrabbable(Grabbable grab) {
+        [SerializeField] Transform aboveCap;
+        private Grabbable movingGrabbable;
 
-            if (DisableColliders) {
+        private void Move(Grabbable grab)
+        {
+            movingGrabbable = grab;
+
+            grab.transform.SetParent(transform, true);
+            iTween.MoveTo(grab.gameObject, iTween.Hash("position", aboveCap.localPosition, "time", 0.4f, "islocal", true, "oncomplete", "StartMovingFinal", "oncompletetarget", gameObject, "easetype", iTween.EaseType.easeInOutCirc));
+            iTween.RotateTo(grab.gameObject, iTween.Hash("rotation", new Vector3(0, 0, 90), "time", 0.4f, "easetype", iTween.EaseType.linear, "islocal", true));
+            grab.GetComponentInChildren<Rigidbody>().isKinematic = true;
+
+            grab.GetComponent<Collider>().enabled = false;
+            grab.GetComponent<Collider>().isTrigger = true;
+        }
+
+        void StartMovingFinal()
+        {
+            iTween.MoveTo(movingGrabbable.gameObject, iTween.Hash("position", Vector3.zero, "time", 0.6f, "islocal", true));
+            iTween.RotateTo(movingGrabbable.gameObject, iTween.Hash("rotation", new Vector3(180, 0, 90), "time", 0.6f, "easetype", iTween.EaseType.linear, "islocal", true));
+        }
+
+        void MoveComplete()
+        {
+            //Debug.Log("Complete");
+            //movingGrabbable.transform.SetParent(transform);
+        }
+
+
+        void disableGrabbable(Grabbable grab)
+        {
+
+            if (DisableColliders)
+            {
                 disabledColliders = grab.GetComponentsInChildren<Collider>(false).ToList();
-                for (int x = 0; x < disabledColliders.Count; x++) {
+                for (int x = 0; x < disabledColliders.Count; x++)
+                {
                     Collider c = disabledColliders[x];
                     c.enabled = false;
                 }
@@ -260,16 +303,20 @@ namespace BNG {
             grab.enabled = false;
         }
 
-        public void GrabEquipped(Grabber grabber) {
+        public void GrabEquipped(Grabber grabber)
+        {
 
-            if (grabber != null) {
-                if(HeldItem) {
+            if (grabber != null)
+            {
+                if (HeldItem)
+                {
                     var g = HeldItem;
                     ReleaseAll();
 
                     // Position next to grabber if somewhat faraways
-                    if(Vector3.Distance(g.transform.position, grabber.transform.position) > 0.2f) {
-                        g.transform.position = grabber.transform.position;
+                    if (Vector3.Distance(g.transform.position, grabber.transform.position) > 0.2f)
+                    {
+                        // g.transform.position = grabber.transform.position;
                     }
 
                     // Do grab
@@ -281,23 +328,29 @@ namespace BNG {
         /// <summary>
         /// Release  everything snapped to us
         /// </summary>
-        public void ReleaseAll() {
+        public void ReleaseAll()
+        {
 
             // No need to keep checking
-            if (HeldItem == null) {
+            if (HeldItem == null)
+            {
                 return;
             }
 
             // Still need to keep track of item if we can't fully drop it
-            if (!CanDropItem && HeldItem != null) {
+            if (!CanDropItem && HeldItem != null)
+            {
                 trackedItem = HeldItem;
             }
 
             HeldItem.ResetScale();
 
-            if (DisableColliders && disabledColliders != null) {
-                foreach (var c in disabledColliders) {
-                    if(c) {
+            if (DisableColliders && disabledColliders != null)
+            {
+                foreach (var c in disabledColliders)
+                {
+                    if (c)
+                    {
                         c.enabled = true;
                     }
                 }
@@ -308,13 +361,11 @@ namespace BNG {
             HeldItem.transform.parent = null;
 
             // Play Unsnap sound
-            if(HeldItem != null) {
-                if (SoundOnSnap) {
-                    VRUtils.Instance.PlaySpatialClipAt(SoundOnUnsnap, transform.position, 0.75f);
-                }
-
+            if (HeldItem != null)
+            {
                 // Call event
-                if (OnDetachEvent != null) {
+                if (OnDetachEvent != null)
+                {
                     OnDetachEvent.Invoke(HeldItem);
                 }
             }

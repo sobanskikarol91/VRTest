@@ -54,7 +54,7 @@ namespace BNG
         /// <summary>
         /// The grabber that is currently holding us. Null if not being held
         /// </summary>        
-        protected List<Grabber> heldByGrabbers;
+        protected List<Grabber> heldByGrabbers = new List<Grabber>();
 
         /// <summary>
         /// Save whether or not the RigidBody was kinematic on Start.
@@ -320,7 +320,8 @@ namespace BNG
                 _grabTransform = new GameObject().transform;
                 _grabTransform.parent = this.transform;
                 _grabTransform.name = "Grab Transform";
-                _grabTransform.localPosition = Vector3.zero;
+               // Debug.Log("Loc Pos");
+               // _grabTransform.localPosition = Vector3.zero;
                 _grabTransform.hideFlags = HideFlags.HideInHierarchy;
 
                 return _grabTransform;
@@ -385,38 +386,38 @@ namespace BNG
         void Update()
         {
 
-            if (remoteGrabbing)
-            {
-                Vector3 remoteDestination = getRemotePosition(flyingTo);
-                Quaternion remoteRotation = getRemoteRotation();
+            //if (remoteGrabbing)
+            //{
+            //    Vector3 remoteDestination = getRemotePosition(flyingTo);
+            //    Quaternion remoteRotation = getRemoteRotation();
 
 
-                float dist2 = Vector3.SqrMagnitude(remoteDestination - transform.position);
-                float dist = Vector3.Distance(transform.position, remoteDestination);
-                // reached destination, snap to final transform position
-                if (dist < 0.01f)
-                {
-                    transform.position = remoteDestination;
-                    transform.rotation = grabTransform.rotation;
+            //    float dist2 = Vector3.SqrMagnitude(remoteDestination - transform.position);
+            //    float dist = Vector3.Distance(transform.position, remoteDestination);
+            //    // reached destination, snap to final transform position
+            //    if (dist < 0.01f)
+            //    {
+            //       /// transform.position = remoteDestination;
+            //       /// transform.rotation = grabTransform.rotation;
 
-                    if (flyingTo != null)
-                    {
-                        flyingTo.GrabGrabbable(this);
-                    }
-                }
-                // Getting close so speed up
-                else if (dist < 0.05f)
-                {
-                    transform.position = Vector3.Lerp(transform.position, remoteDestination, Time.deltaTime * GrabSpeed * 2);
-                    transform.rotation = Quaternion.Lerp(transform.rotation, remoteRotation, Time.deltaTime * GrabSpeed * 2);
-                }
-                // Normal Lerp
-                else
-                {
-                    transform.position = Vector3.Lerp(transform.position, remoteDestination, Time.deltaTime * GrabSpeed);
-                    transform.rotation = Quaternion.Lerp(transform.rotation, remoteRotation, Time.deltaTime * GrabSpeed);
-                }
-            }
+            //        if (flyingTo != null)
+            //        {
+            //            flyingTo.GrabGrabbable(this);
+            //        }
+            //    }
+            //    // Getting close so speed up
+            //    else if (dist < 0.05f)
+            //    {
+            //      //  transform.position = Vector3.Lerp(transform.position, remoteDestination, Time.deltaTime * GrabSpeed * 2);
+            //      //   transform.rotation = Quaternion.Lerp(transform.rotation, remoteRotation, Time.deltaTime * GrabSpeed * 2);
+            //    }
+            //    // Normal Lerp
+            //    else
+            //    {
+            //      //  transform.position = Vector3.Lerp(transform.position, remoteDestination, Time.deltaTime * GrabSpeed);
+            //      //  transform.rotation = Quaternion.Lerp(transform.rotation, remoteRotation, Time.deltaTime * GrabSpeed);
+            //    }
+            //}
 
             if (BeingHeld)
             {
@@ -467,13 +468,13 @@ namespace BNG
             }
         }
 
-        void FixedUpdate()
-        {
-            if (BeingHeld)
-            {
-                updateJoints(GetPrimaryGrabber());
-            }
-        }
+        //void FixedUpdate()
+        //{
+        //    if (BeingHeld)
+        //    {
+        //        updateJoints(GetPrimaryGrabber());
+        //    }
+        //}
 
         /// <summary>
         /// Is this object able to be grabbed. Does not check for valid Grabbers, only if it isn't being held, is active, etc.
@@ -623,19 +624,20 @@ namespace BNG
 
                     if (g != null)
                     {
-                        transform.localPosition = Vector3.Lerp(transform.localPosition, Vector3.zero - GrabPositionOffset, fractionOfJourney);
-                        transform.localRotation = Quaternion.Lerp(transform.localRotation, grabTransform.localRotation, Time.deltaTime * 10);
+                        Debug.Log("Loc Pos");
+                        //transform.localPosition = Vector3.Lerp(transform.localPosition, Vector3.zero - GrabPositionOffset, fractionOfJourney);
+                        //transform.localRotation = Quaternion.Lerp(transform.localRotation, grabTransform.localRotation, Time.deltaTime * 10);
                     }
                     else
                     {
-                        transform.position = Vector3.Lerp(transform.position, GrabPositionOffset, fractionOfJourney);
-                        transform.localRotation = Quaternion.Lerp(transform.localRotation, grabTransform.localRotation, Time.deltaTime * 10);
+                        //transform.position = Vector3.Lerp(transform.position, GrabPositionOffset, fractionOfJourney);
+                        //transform.localRotation = Quaternion.Lerp(transform.localRotation, grabTransform.localRotation, Time.deltaTime * 10);
                     }
                 }
                 else if (GrabMechanic == GrabType.Precise)
                 {
-                    transform.position = grabTransform.position;
-                    transform.eulerAngles = grabTransform.eulerAngles;
+                    //transform.position = grabTransform.position;
+                    //transform.eulerAngles = grabTransform.eulerAngles;
                 }
             }
 
@@ -675,8 +677,8 @@ namespace BNG
                         {
                             // Snap position
                             parentHandGraphics(g);
-                            g.HandsGraphics.localPosition = g.handsGraphicsGrabberOffset;
-                            g.HandsGraphics.localEulerAngles = Vector3.zero;
+                            //g.HandsGraphics.localPosition = g.handsGraphicsGrabberOffset;
+                            //g.HandsGraphics.localEulerAngles = Vector3.zero;
                         }
                     }
                 }
@@ -732,11 +734,11 @@ namespace BNG
                     if (SecondaryLookAtTransform && thisGrabber)
                     {
                         SecondaryLookAtTransform.parent = thisGrabber.transform;
-                        SecondaryLookAtTransform.localEulerAngles = Vector3.zero;
-                        SecondaryLookAtTransform.localPosition = new Vector3(0, 0, SecondaryLookAtTransform.localPosition.z);
+                        //SecondaryLookAtTransform.localEulerAngles = Vector3.zero;
+                        //SecondaryLookAtTransform.localPosition = new Vector3(0, 0, SecondaryLookAtTransform.localPosition.z);
 
                         // Move parent back to grabber
-                        SecondaryLookAtTransform.parent = secondaryGrabber.transform;
+                       // SecondaryLookAtTransform.parent = secondaryGrabber.transform;
                     }
                 }
             }
@@ -805,9 +807,9 @@ namespace BNG
 
             // Update held by properties
             addGrabber(grabbedBy);
-            grabTransform.parent = grabbedBy.transform;
+           // grabTransform.parent = grabbedBy.transform;
 
-            grabbedBy.transform.localEulerAngles = GrabRotationOffset;
+           // grabbedBy.transform.localEulerAngles = GrabRotationOffset;
 
             // Hide the hand graphics if necessary
             if (HideHandGraphics)
@@ -818,22 +820,23 @@ namespace BNG
             // Use center of grabber if snapping
             if (GrabMechanic == GrabType.Snap)
             {
-                grabTransform.localEulerAngles = Vector3.zero;
-                grabTransform.localPosition = GrabPositionOffset;
+                //grabTransform.localEulerAngles = Vector3.zero;
+               // Debug.Log("Loc Pos");
+                //grabTransform.localPosition = GrabPositionOffset;
             }
             // Precision hold can use position of what we're grabbing
             else if (GrabMechanic == GrabType.Precise)
             {
-                grabTransform.position = transform.position;
-                grabTransform.rotation = transform.rotation;
+                //grabTransform.position = transform.position;
+                //grabTransform.rotation = transform.rotation;
             }
 
             // Move Hand Model
             if (GrabMechanic == GrabType.Precise && SnapHandModel && primaryGrabOffset != null)
             {
-                grabbedBy.HandsGraphics.transform.parent = primaryGrabOffset;
-                grabbedBy.HandsGraphics.localPosition = grabbedBy.handsGraphicsGrabberOffset;
-                grabbedBy.HandsGraphics.localEulerAngles = grabbedBy.handsGraphicsGrabberOffsetRotation;
+                //grabbedBy.HandsGraphics.transform.parent = primaryGrabOffset;
+                //grabbedBy.HandsGraphics.localPosition = grabbedBy.handsGraphicsGrabberOffset;
+                //grabbedBy.HandsGraphics.localEulerAngles = grabbedBy.handsGraphicsGrabberOffsetRotation;
             }
 
             // First remove any connected joints if necessary
@@ -1297,7 +1300,7 @@ namespace BNG
                 // Set to specified Grab Transform
                 if (primaryGrabOffset != null)
                 {
-                    g.HandsGraphics.transform.parent = primaryGrabOffset;
+                   // g.HandsGraphics.transform.parent = primaryGrabOffset;
 
                     if (GrabMechanic == GrabType.Snap)
                     {
@@ -1307,29 +1310,13 @@ namespace BNG
                 }
                 else
                 {
-                    g.HandsGraphics.transform.parent = transform;
+                   // g.HandsGraphics.transform.parent = transform;
                 }
 
                 didParentHands = true;
             }
         }
 
-        Vector3 getHandOffset()
-        {
-
-            if (primaryGrabOffset)
-            {
-                // Reverse X axis if on other hand
-                var grabbedBy = GetPrimaryGrabber();
-                if (MirrorOffsetForOtherHand && grabbedBy != null && grabbedBy.HandSide == ControllerHand.Left)
-                {
-                    return new Vector3(primaryGrabOffset.transform.localPosition.x * -1, primaryGrabOffset.transform.localPosition.y, primaryGrabOffset.transform.localPosition.z);
-                }
-                return primaryGrabOffset.transform.localPosition;
-            }
-
-            return Vector3.zero;
-        }
 
         void setupConfigJoint(Grabber g)
         {
@@ -1407,10 +1394,10 @@ namespace BNG
                         offsetPosition = new Vector3(-offsetPosition.x, offsetPosition.y, offsetPosition.z);
                     }
 
-                    grabTransform.localPosition -= offsetPosition;
+                    //grabTransform.localPosition -= offsetPosition;
                     Vector3 result = grabTransform.position;
 
-                    grabTransform.position = originalPos;
+                    //grabTransform.position = originalPos;
 
                     return result;
                 }
@@ -1510,6 +1497,12 @@ namespace BNG
             {
                 Gizmos.DrawSphere(transform.position, 0.02f);
             }
+        }
+
+        public void DropFromGrabber()
+        {
+            List<Grabber> grabbers = new List<Grabber>(heldByGrabbers);
+            grabbers.ForEach(h => h.TryRelease());
         }
     }
 }

@@ -62,7 +62,7 @@ namespace BNG {
 
             if (Vector3.Distance(transform.position, ReturnTo.transform.position) < SnapDistance) {
                 rigid.useGravity = useGravityInitial;
-                ReturnTo.GrabGrabbable(grab);
+                ReturnTo.Snap(grab);
             }
         }
     }
