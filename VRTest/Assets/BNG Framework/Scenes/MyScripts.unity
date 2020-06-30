@@ -788,11 +788,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1350232731}
   - component: {fileID: 1350232739}
-  - component: {fileID: 1350232738}
   - component: {fileID: 1350232737}
   - component: {fileID: 1350232735}
   - component: {fileID: 1350232734}
-  - component: {fileID: 1350232733}
   - component: {fileID: 1350232732}
   - component: {fileID: 1350232736}
   - component: {fileID: 1350232740}
@@ -829,18 +827,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8e03b2d1a082a9e4f976ec49c2a58f35, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1350232733
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1350232730}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3a78c80d1a2f4640bd054685100e61c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1350232734
@@ -926,24 +912,6 @@ MonoBehaviour:
   LocalOffsetTransform: {fileID: 0}
   MirrorOffsetForOtherHand: 1
   GrabPoints: []
---- !u!114 &1350232738
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1350232730}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d4b3aeee51a5bd48bf569efd03b09ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hoverMask:
-    serializedVersion: 2
-    m_Bits: 0
-  ClosestGrabbable: {fileID: 0}
-  ClosestRemoteGrabbable: {fileID: 0}
-  FireGrabbableEvents: 1
 --- !u!135 &1350232739
 SphereCollider:
   m_ObjectHideFlags: 0

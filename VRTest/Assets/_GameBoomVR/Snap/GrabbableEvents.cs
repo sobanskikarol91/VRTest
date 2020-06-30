@@ -56,10 +56,6 @@ namespace BNG
 
         }
 
-        /// <summary>
-        /// No longer closest grabbable. May need to disable highlight, ring, etc.
-        /// </summary>
-        /// <param name="touchingHand"></param>
         public virtual void OnNoLongerClosestGrabbable(ControllerHand touchingHand)
         {
 
@@ -191,4 +187,6 @@ namespace BNG
             this.grabber = grabber;
         }
     }
+
+
 }

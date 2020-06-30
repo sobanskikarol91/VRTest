@@ -1,7 +1,7 @@
 ﻿using BNG;
 using UnityEngine;
 
-public class UnsnapIfItemIsHeld : MonoBehaviour, IUnSnapCondition
+public class UnsnapIfItemIsBeingHeld : MonoBehaviour, IUnSnapCondition
 {
     [SerializeField] Grabbable reqiredHeldItem;
 
