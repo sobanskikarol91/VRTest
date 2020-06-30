@@ -14,6 +14,7 @@ public class BaseSnapCondiion : MonoBehaviour, ISnapCondition
     {
         if (subject == null)
             Debug.Log("Grabbable is null");
+
         return subject != null;
     }
 }

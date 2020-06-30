@@ -1,7 +1,6 @@
 ﻿using BNG;
 using UnityEngine;
 
-[RequireComponent(typeof(SnapZone))]
 public class SnapObjectFromGroup : MonoBehaviour, ISnapCondition
 {
     [SerializeField] string[] snapToObjects;
