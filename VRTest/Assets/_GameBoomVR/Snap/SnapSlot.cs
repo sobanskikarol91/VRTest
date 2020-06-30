@@ -1,17 +1,14 @@
 ﻿using BNG;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public enum SnapState { None, IsWaiting, Snapped }
+public enum SnapState { None, IsWaitingForRelease, Snapped }
 
 public class SnapSlot : GrabbableEvents
 {
-    public event Action snapCompleted;
     public bool IsEmpty => !IsFull;
-    public bool IsFull => grabbable;
+    public bool IsFull => snappedItem;
     private bool isGrabberInRange;
 
     private ISnapCondition[] snapConditions;
@@ -21,16 +18,27 @@ public class SnapSlot : GrabbableEvents
     private IUnsnap[] unsnaps;
     private ISnapAreaEnter[] snapAreaEnters;
     private ISnapNotUsed[] snapNotUsed;
-    private GrabbablesInTrigger grabbableInTrigger;
-    private Grabbable snappedItem;
-    private Grabbable grabbable;
-    private Grabber grabber;
     private SnapState snapState;
+    private GrabbablesInTrigger grabbableInTrigger;
+    private Grabbable grabbable, snappedItem;
+    private Grabber grabber;
 
 
     private void Awake()
     {
         FindReferences();
+    }
+
+    private void FindReferences()
+    {
+        grabbableInTrigger = GetComponent<GrabbablesInTrigger>();
+        snapConditions = GetComponents<ISnapCondition>();
+        unsnapConditions = GetComponents<IUnSnapCondition>();
+        snapReleases = GetComponents<ISnapOnRelease>();
+        snapAreaExits = GetComponents<ISnapAreaExit>();
+        snapAreaEnters = GetComponents<ISnapAreaEnter>();
+        unsnaps = GetComponents<IUnsnap>();
+        snapNotUsed = GetComponents<ISnapNotUsed>();
     }
 
     public override void OnBecomesClosestGrabbable(object sender, GrabbableEventArgs e)
@@ -57,17 +65,16 @@ public class SnapSlot : GrabbableEvents
     {
         e.grabber.Drop -= OnGrabRelease;
 
-        if (snapState == SnapState.IsWaiting)
-            SnapNotUsed();
+        if (snapState == SnapState.IsWaitingForRelease)
+            SnapCanceled();
 
         isGrabberInRange = false;
     }
 
     public override void OnGrab(Grabber grabber)
     {
-        if (snappedItem == null) return;
-
-        Unsnap();
+        if (IsFull)
+            Unsnap();
     }
 
     public void OnGrabRelease(GrabbableEventArgs args)
@@ -77,18 +84,6 @@ public class SnapSlot : GrabbableEvents
         Debug.Log("GrabRelease: " + args.grabber.HeldGrabbable);
         snapState = SnapState.Snapped;
         Array.ForEach(snapReleases, s => s.OnRelease(grabbable));
-    }
-
-    private void FindReferences()
-    {
-        grabbableInTrigger = GetComponent<GrabbablesInTrigger>();
-        snapConditions = GetComponents<ISnapCondition>();
-        unsnapConditions = GetComponents<IUnSnapCondition>();
-        snapReleases = GetComponents<ISnapOnRelease>();
-        snapAreaExits = GetComponents<ISnapAreaExit>();
-        snapAreaEnters = GetComponents<ISnapAreaEnter>();
-        unsnaps = GetComponents<IUnsnap>();
-        snapNotUsed = GetComponents<ISnapNotUsed>();
     }
 
     private bool AreSnapConditionsMet()
@@ -120,17 +115,12 @@ public class SnapSlot : GrabbableEvents
 
     void Snap()
     {
-        snapState = SnapState.IsWaiting;
+        snapState = SnapState.IsWaitingForRelease;
         Array.ForEach(snapAreaEnters, s => s.SnapEnter(grabbable));
         snappedItem = grabbable;
     }
 
-    private void OnSnapCompleted()
-    {
-        snapCompleted?.Invoke();
-    }
-
-    void SnapNotUsed()
+    void SnapCanceled()
     {
         Debug.Log("SnapNotUsed");
         grabber.GrabGrabbable(snappedItem);
