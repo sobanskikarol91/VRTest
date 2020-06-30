@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class DisablePhysicSnapEffect : MonoBehaviour, ISnapOnRelease
 {
-
     public void OnRelease(Grabbable subject)
     {
         Collider[] disabledColliders = subject.GetComponentsInChildren<Collider>();

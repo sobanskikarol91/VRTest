@@ -73,7 +73,7 @@ public class SnapSlot : GrabbableEvents
 
     public override void OnGrab(Grabber grabber)
     {
-        if (IsFull)
+        if (IsFull && AreUnsnapConditionsMet())
             Unsnap();
     }
 

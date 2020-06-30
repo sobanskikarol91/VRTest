@@ -10,6 +10,7 @@ namespace BNG
     /// </summary>
     public class GrabbablesInTrigger : MonoBehaviour
     {
+        public LayerMask hoverMask;
 
         /// <summary>
         /// All grabbables in trigger that are considered valid
@@ -47,23 +48,32 @@ namespace BNG
         private float _thisDistance;
         private Dictionary<Collider, Grabbable> _valids;
         private Dictionary<Collider, Grabbable> _filtered;
+        private Collider[] _hoverColliders;
+        private Transform _tr;
+        private SphereCollider _col;
 
         void Start()
         {
             NearbyGrabbables = new Dictionary<Collider, Grabbable>();
             ValidGrabbables = new Dictionary<Collider, Grabbable>();
             ValidRemoteGrabbables = new Dictionary<Collider, Grabbable>();
+            _hoverColliders = new Collider[64];
+            _tr = GetComponent<Transform>();
+            _col = GetComponent<SphereCollider>();
         }
 
         void Update()
         {
             // Sort Grabbales by Distance so we can use that information later if we need it
-            updateClosestGrabbable();
-            updateClosestRemoteGrabbables();
+            UpdateClosestGrabbable();
+            UpdateClosestRemoteGrabbables();
         }
 
-        void updateClosestGrabbable()
+        void UpdateClosestGrabbable()
         {
+
+            // update near grabbables
+            UpdateHover();
 
             // Remove any Grabbables that may have been destroyed, deactivated, etc.
             NearbyGrabbables = sanitizeGrabbables(NearbyGrabbables);
@@ -75,9 +85,8 @@ namespace BNG
             ClosestGrabbable = GetClosestGrabbable(ValidGrabbables);
         }
 
-        void updateClosestRemoteGrabbables()
+        void UpdateClosestRemoteGrabbables()
         {
-
             // Assign closest remote grabbable
             ClosestRemoteGrabbable = GetClosestGrabbable(ValidRemoteGrabbables, true);
 
@@ -271,22 +280,52 @@ namespace BNG
             }
         }
 
-        void OnTriggerEnter(Collider other)
+        public void UpdateHover()
         {
-            Grabbable g = other.GetComponent<Grabbable>();
-            if (g != null)
+            NearbyGrabbables.Clear();
+            ClearColliderArray();
+
+
+            Physics.OverlapSphereNonAlloc(_tr.position, _col.radius, _hoverColliders, hoverMask);
+            for (int i = 0; i < _hoverColliders.Length; i++)
             {
-                AddNearbyGrabbable(other, g);
+                if (_hoverColliders[i] == null)
+                    continue;
+
+                //if (NearbyGrabbables.ContainsKey(_hoverColliders[i]))
+                //    continue;
+
+                var grabbableCandidate = _hoverColliders[i].GetComponentInParent<Grabbable>();
+                if (grabbableCandidate == null)
+                    continue;
+
+                //if (NearbyGrabbables.ContainsValue(grabbableCandidate))
+                //    continue;
+
+                AddNearbyGrabbable(_hoverColliders[i], grabbableCandidate);
             }
         }
 
-        void OnTriggerExit(Collider other)
+        private void ClearColliderArray()
         {
-            Grabbable g = other.GetComponent<Grabbable>();
-            if (g != null)
+            for (int i = 0; i < _hoverColliders.Length; i++)
             {
-                RemoveNearbyGrabbable(other, g);
+                _hoverColliders[i] = null;
             }
         }
+
+        //void OnTriggerEnter(Collider other) {
+        //    Grabbable g = other.GetComponentInParent<Grabbable>();
+        //    if (g != null) {
+        //        AddNearbyGrabbable(other, g);
+        //    }
+        //}
+
+        //void OnTriggerExit(Collider other) {
+        //    Grabbable g = other.GetComponentInParent<Grabbable>();
+        //    if (g != null) {
+        //        RemoveNearbyGrabbable(other, g);
+        //    }
+        //}
     }
 }
