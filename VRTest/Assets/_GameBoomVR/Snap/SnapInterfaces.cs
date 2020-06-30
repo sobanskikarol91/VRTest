@@ -30,7 +30,7 @@ public interface IUnsnap
     void OnUnsnap(GrabbableEventArgs subject);
 }
 
-public interface ISnapNotUsed
+public interface ISnapCanceled
 {
-    void SnapNotUsed(GrabbableEventArgs subject);
+    void SnapCanceled(GrabbableEventArgs subject);
 }

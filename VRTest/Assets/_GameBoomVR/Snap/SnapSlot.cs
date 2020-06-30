@@ -17,7 +17,7 @@ public class SnapSlot : GrabbableEvents
     private ISnapOnRelease[] snapReleases;
     private IUnsnap[] unsnaps;
     private ISnapAreaEnter[] snapAreaEnters;
-    private ISnapNotUsed[] snapNotUsed;
+    private ISnapCanceled[] snapCalceled;
     private SnapState snapState;
     private GrabbablesInTrigger grabbableInTrigger;
     private Grabbable grabbable, snappedItem;
@@ -38,7 +38,7 @@ public class SnapSlot : GrabbableEvents
         snapAreaExits = GetComponents<ISnapAreaExit>();
         snapAreaEnters = GetComponents<ISnapAreaEnter>();
         unsnaps = GetComponents<IUnsnap>();
-        snapNotUsed = GetComponents<ISnapNotUsed>();
+        snapCalceled = GetComponents<ISnapCanceled>();
     }
 
     public override void OnBecomesClosestGrabbable(object sender, GrabbableEventArgs e)
@@ -55,7 +55,7 @@ public class SnapSlot : GrabbableEvents
         grabber = e.grabber;
         grabber.Drop += OnGrabRelease;
 
-        if (AreSnapConditionsMet())
+        if (grabbable && AreSnapConditionsMet())
             EnterToSnapArea();
 
         isGrabberInRange = true;
@@ -66,7 +66,7 @@ public class SnapSlot : GrabbableEvents
         e.grabber.Drop -= OnGrabRelease;
 
         if (snapState == SnapState.IsWaitingForRelease)
-            SnapCanceled();
+            SnapCanceled(e);
 
         isGrabberInRange = false;
     }
@@ -120,10 +120,11 @@ public class SnapSlot : GrabbableEvents
         snappedItem = grabbable;
     }
 
-    void SnapCanceled()
+    void SnapCanceled(GrabbableEventArgs args)
     {
         Debug.Log("SnapNotUsed");
         grabber.GrabGrabbable(snappedItem);
+        Array.ForEach(snapCalceled, s => s.SnapCanceled(args));
         snappedItem = null;
         snapState = SnapState.None;
     }
