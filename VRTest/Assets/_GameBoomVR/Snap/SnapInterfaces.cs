@@ -22,7 +22,7 @@ public interface ISnapAreaEnter
 
 public interface ISnapOnRelease
 {
-    void Snap(Grabbable subject);
+    void OnRelease(Grabbable subject);
 }
 
 public interface IUnsnap

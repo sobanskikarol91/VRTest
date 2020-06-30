@@ -31,7 +31,7 @@ public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaE
         grabbable.GetComponent<Collider>().isTrigger = true;
     }
 
-    public void Snap(Grabbable subject)
+    public void OnRelease(Grabbable subject)
     {
         grabbable.transform.SetParent(transform, true);
         grabbable.GetComponent<Rigidbody>().isKinematic = true;

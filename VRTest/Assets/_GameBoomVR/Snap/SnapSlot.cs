@@ -75,7 +75,8 @@ public class SnapSlot : GrabbableEvents
         if (grabbable == null) return;
 
         Debug.Log("GrabRelease: " + args.grabber.HeldGrabbable);
-        Snap();
+        snapState = SnapState.Snapped;
+        Array.ForEach(snapReleases, s => s.OnRelease(grabbable));
     }
 
     private void FindReferences()
@@ -104,8 +105,7 @@ public class SnapSlot : GrabbableEvents
     private void EnterToSnapArea()
     {
         Debug.Log("Snap AreaEnter");
-        snapState = SnapState.IsWaiting;
-        Array.ForEach(snapAreaEnters, s => s.SnapEnter(grabbable));
+        Snap();
     }
 
     private void Unsnap()
@@ -120,9 +120,9 @@ public class SnapSlot : GrabbableEvents
 
     void Snap()
     {
+        snapState = SnapState.IsWaiting;
+        Array.ForEach(snapAreaEnters, s => s.SnapEnter(grabbable));
         snappedItem = grabbable;
-        Array.ForEach(snapReleases, s => s.Snap(grabbable));
-        snapState = SnapState.Snapped;
     }
 
     private void OnSnapCompleted()
@@ -133,6 +133,8 @@ public class SnapSlot : GrabbableEvents
     void SnapNotUsed()
     {
         Debug.Log("SnapNotUsed");
-        Unsnap();
+        grabber.GrabGrabbable(snappedItem);
+        snappedItem = null;
+        snapState = SnapState.None;
     }
 }
