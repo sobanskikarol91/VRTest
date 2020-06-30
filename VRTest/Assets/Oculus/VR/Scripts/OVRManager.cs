@@ -1200,7 +1200,7 @@ public class OVRManager : MonoBehaviour
 				"OVRPlugin v" + OVRPlugin.version + ", " +
 				"SDK v" + OVRPlugin.nativeSDKVersion + ".");
 
-		Debug.Log("SystemHeadset " + OVRPlugin.GetSystemHeadsetType().ToString());
+		//Debug.Log("SystemHeadset " + OVRPlugin.GetSystemHeadsetType().ToString());
 
 #if !UNITY_EDITOR
 		if (IsUnityAlphaOrBetaVersion())
@@ -1493,9 +1493,7 @@ public class OVRManager : MonoBehaviour
 
 		if (useRecommendedMSAALevel && QualitySettings.antiAliasing != display.recommendedMSAALevel)
 		{
-			Debug.Log("The current MSAA level is " + QualitySettings.antiAliasing +
-			", but the recommended MSAA level is " + display.recommendedMSAALevel +
-			". Switching to the recommended level.");
+
 
 			QualitySettings.antiAliasing = display.recommendedMSAALevel;
 		}
@@ -1519,7 +1517,7 @@ public class OVRManager : MonoBehaviour
 		{
 			try
 			{
-				Debug.Log("[OVRManager] HMDLost event");
+			//	Debug.Log("[OVRManager] HMDLost event");
 				if (HMDLost != null)
 					HMDLost();
 			}
@@ -1533,13 +1531,13 @@ public class OVRManager : MonoBehaviour
 		{
 			try
 			{
-				Debug.Log("[OVRManager] HMDAcquired event");
+				//Debug.Log("[OVRManager] HMDAcquired event");
 				if (HMDAcquired != null)
 					HMDAcquired();
 			}
 			catch (Exception e)
 			{
-				Debug.LogError("Caught Exception: " + e);
+				//Debug.LogError("Caught Exception: " + e);
 			}
 		}
 
@@ -1553,7 +1551,7 @@ public class OVRManager : MonoBehaviour
 		{
 			try
 			{
-				Debug.Log("[OVRManager] HMDUnmounted event");
+			//	Debug.Log("[OVRManager] HMDUnmounted event");
 				if (HMDUnmounted != null)
 					HMDUnmounted();
 			}
@@ -1567,7 +1565,7 @@ public class OVRManager : MonoBehaviour
 		{
 			try
 			{
-				Debug.Log("[OVRManager] HMDMounted event");
+				//Debug.Log("[OVRManager] HMDMounted event");
 				if (HMDMounted != null)
 					HMDMounted();
 			}
@@ -1587,13 +1585,13 @@ public class OVRManager : MonoBehaviour
 		{
 			try
 			{
-				Debug.Log("[OVRManager] VrFocusLost event");
+			//	Debug.Log("[OVRManager] VrFocusLost event");
 				if (VrFocusLost != null)
 					VrFocusLost();
 			}
 			catch (Exception e)
 			{
-				Debug.LogError("Caught Exception: " + e);
+			//	Debug.LogError("Caught Exception: " + e);
 			}
 		}
 
@@ -1601,7 +1599,7 @@ public class OVRManager : MonoBehaviour
 		{
 			try
 			{
-				Debug.Log("[OVRManager] VrFocusAcquired event");
+			//	Debug.Log("[OVRManager] VrFocusAcquired event");
 				if (VrFocusAcquired != null)
 					VrFocusAcquired();
 			}
@@ -1621,13 +1619,13 @@ public class OVRManager : MonoBehaviour
 		{
 			try
 			{
-				Debug.Log("[OVRManager] InputFocusLost event");
+			//	Debug.Log("[OVRManager] InputFocusLost event");
 				if (InputFocusLost != null)
 					InputFocusLost();
 			}
 			catch (Exception e)
 			{
-				Debug.LogError("Caught Exception: " + e);
+			//	Debug.LogError("Caught Exception: " + e);
 			}
 		}
 
@@ -1635,13 +1633,13 @@ public class OVRManager : MonoBehaviour
 		{
 			try
 			{
-				Debug.Log("[OVRManager] InputFocusAcquired event");
+			//	Debug.Log("[OVRManager] InputFocusAcquired event");
 				if (InputFocusAcquired != null)
 					InputFocusAcquired();
 			}
 			catch (Exception e)
 			{
-				Debug.LogError("Caught Exception: " + e);
+			//	Debug.LogError("Caught Exception: " + e);
 			}
 		}
 
@@ -1701,13 +1699,13 @@ public class OVRManager : MonoBehaviour
 		{
 			try
 			{
-				Debug.Log("[OVRManager] AudioOutChanged event");
+			//	Debug.Log("[OVRManager] AudioOutChanged event");
 				if (AudioOutChanged != null)
 					AudioOutChanged();
 			}
 			catch (Exception e)
 			{
-				Debug.LogError("Caught Exception: " + e);
+				//Debug.LogError("Caught Exception: " + e);
 			}
 
 			prevAudioOutId = audioOutId;
@@ -1723,13 +1721,13 @@ public class OVRManager : MonoBehaviour
 		{
 			try
 			{
-				Debug.Log("[OVRManager] AudioInChanged event");
+			//	Debug.Log("[OVRManager] AudioInChanged event");
 				if (AudioInChanged != null)
 					AudioInChanged();
 			}
 			catch (Exception e)
 			{
-				Debug.LogError("Caught Exception: " + e);
+			//	Debug.LogError("Caught Exception: " + e);
 			}
 
 			prevAudioInId = audioInId;
@@ -1741,13 +1739,13 @@ public class OVRManager : MonoBehaviour
 		{
 			try
 			{
-				Debug.Log("[OVRManager] TrackingLost event");
+				//Debug.Log("[OVRManager] TrackingLost event");
 				if (TrackingLost != null)
 					TrackingLost();
 			}
 			catch (Exception e)
 			{
-				Debug.LogError("Caught Exception: " + e);
+				//Debug.LogError("Caught Exception: " + e);
 			}
 		}
 
@@ -1755,13 +1753,13 @@ public class OVRManager : MonoBehaviour
 		{
 			try
 			{
-				Debug.Log("[OVRManager] TrackingAcquired event");
+				//Debug.Log("[OVRManager] TrackingAcquired event");
 				if (TrackingAcquired != null)
 					TrackingAcquired();
 			}
 			catch (Exception e)
 			{
-				Debug.LogError("Caught Exception: " + e);
+				//Debug.LogError("Caught Exception: " + e);
 			}
 		}
 
@@ -1822,11 +1820,11 @@ public class OVRManager : MonoBehaviour
 
 		if (result != null)
 		{
-			Debug.LogFormat("[OVRManager] mainCamera found for MRC: ", result.gameObject.name);
+		//	Debug.LogFormat("[OVRManager] mainCamera found for MRC: ", result.gameObject.name);
 		}
 		else
 		{
-			Debug.Log("[OVRManager] unable to find a vaild camera");
+			//Debug.Log("[OVRManager] unable to find a vaild camera");
 		}
 		lastFoundMainCamera = result;
 		return result;
@@ -1853,7 +1851,7 @@ public class OVRManager : MonoBehaviour
 
 	private void OnDestroy()
 	{
-		Debug.Log("[OVRManager] OnDestroy");
+		//Debug.Log("[OVRManager] OnDestroy");
 		OVRManagerinitialized = false;
 	}
 
@@ -1861,11 +1859,11 @@ public class OVRManager : MonoBehaviour
 	{
 		if (pause)
 		{
-			Debug.Log("[OVRManager] OnApplicationPause(true)");
+			//Debug.Log("[OVRManager] OnApplicationPause(true)");
 		}
 		else
 		{
-			Debug.Log("[OVRManager] OnApplicationPause(false)");
+		//	Debug.Log("[OVRManager] OnApplicationPause(false)");
 		}
 	}
 
@@ -1873,17 +1871,17 @@ public class OVRManager : MonoBehaviour
 	{
 		if (focus)
 		{
-			Debug.Log("[OVRManager] OnApplicationFocus(true)");
+		//	Debug.Log("[OVRManager] OnApplicationFocus(true)");
 		}
 		else
 		{
-			Debug.Log("[OVRManager] OnApplicationFocus(false)");
+			//Debug.Log("[OVRManager] OnApplicationFocus(false)");
 		}
 	}
 
 	private void OnApplicationQuit()
 	{
-		Debug.Log("[OVRManager] OnApplicationQuit");
+		//Debug.Log("[OVRManager] OnApplicationQuit");
 	}
 
 #endregion // Unity Messages

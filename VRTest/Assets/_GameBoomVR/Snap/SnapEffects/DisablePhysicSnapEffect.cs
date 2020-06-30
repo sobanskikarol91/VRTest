@@ -2,15 +2,16 @@
 using BNG;
 using UnityEngine;
 
-public class DisablePhysicSnapEffect : MonoBehaviour, ISnapEffect
+public class DisablePhysicSnapEffect : MonoBehaviour, ISnapOnRelease
 {
-    public event Action OnCompletedAnimation;
-    
-    public void SnapEffect(Grabbable subject)
+
+    public void Snap(Grabbable subject)
     {
         Collider[] disabledColliders = subject.GetComponentsInChildren<Collider>();
 
-        subject.GetComponent<Rigidbody>().isKinematic = true;
+        Rigidbody rb = subject.GetComponent<Rigidbody>();
+
+        if (rb) rb.isKinematic = true;
         Array.ForEach(disabledColliders, d => d.enabled = false);
     }
 }

@@ -963,7 +963,7 @@ namespace BNG
             {
                 for (int x = 0; x < events.Count; x++)
                 {
-                    events[x].OnRelease();
+                    events[x].OnGrabRelease();
                 }
             }
 

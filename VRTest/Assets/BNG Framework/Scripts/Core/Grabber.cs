@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -42,6 +43,8 @@ namespace BNG
         Grabbable previousClosest;
         Grabbable previousClosestRemote;
 
+        public event Action<GrabbableEventArgs> Drop;
+        public event Action<GrabbableEventArgs> Grab;
         /// <summary>
         /// Are we currently holding any valid items?
         /// </summary>
@@ -259,15 +262,18 @@ namespace BNG
                         for (int x = 0; x < ge.Length; x++)
                         {
                             ge[x].OnNoLongerClosestGrabbable(HandSide);
+
+                            GrabbableEventArgs args = new GrabbableEventArgs(grabsInTrigger.ClosestGrabbable, this);
+
+                            ge[x].OnNoLongerClosestGrabbable(this, args);
                         }
                     }
                     previousClosest.RemoveValidGrabber(this);
                 }
 
                 // Update closest Grabbable
-                if (grabsInTrigger.ClosestGrabbable != null && !HoldingItem)
+                if (grabsInTrigger.ClosestGrabbable != null)
                 {
-
                     // Fire Off Events
                     GrabbableEvents[] ge = grabsInTrigger.ClosestGrabbable.GetComponents<GrabbableEvents>();
                     if (ge != null)
@@ -275,6 +281,10 @@ namespace BNG
                         for (int x = 0; x < ge.Length; x++)
                         {
                             ge[x].OnBecomesClosestGrabbable(HandSide);
+
+                            GrabbableEventArgs args = new GrabbableEventArgs(grabsInTrigger.ClosestGrabbable, this);
+
+                            ge[x].OnBecomesClosestGrabbable(this, args);
                         }
                     }
                     grabsInTrigger.ClosestGrabbable.AddValidGrabber(this);
@@ -553,6 +563,7 @@ namespace BNG
             // Drop whatever we were holding
             if (HeldGrabbable != null && HeldGrabbable)
             {
+                Debug.Log("Try release:" + HeldGrabbable.name);
                 TryRelease();
             }
 
@@ -564,6 +575,7 @@ namespace BNG
 
             // Let item know it's been grabbed
             item.GrabItem(this);
+            Grab?.Invoke(new GrabbableEventArgs(item, this));
         }
 
         // Dropped whatever was in hand
@@ -607,6 +619,7 @@ namespace BNG
             if (HeldGrabbable != null && HeldGrabbable.CanBeDropped)
             {
                 HeldGrabbable.DropItem(this);
+                Drop?.Invoke(new GrabbableEventArgs(HeldGrabbable, this));
             }
 
             // No longer try to bring flying grabbable to us

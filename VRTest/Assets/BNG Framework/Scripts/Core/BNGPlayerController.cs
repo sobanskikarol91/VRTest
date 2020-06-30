@@ -107,7 +107,7 @@ namespace BNG {
                 characterController.transform.position = playerPos;
                 characterController.transform.rotation = playerRot;
 
-                Debug.Log("Player position not set to 0. Moving player to : " + playerPos);
+              //  Debug.Log("Player position not set to 0. Moving player to : " + playerPos);
             }
 
             ChangeLocomotionType(selectedLocomotion);

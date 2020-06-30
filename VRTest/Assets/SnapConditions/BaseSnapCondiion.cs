@@ -12,6 +12,8 @@ public class BaseSnapCondiion : MonoBehaviour, ISnapCondition
 
     public bool ShouldSnap(Grabbable subject)
     {
-        return snapSlot.IsEmpty && subject != null;
+        if (subject == null)
+            Debug.Log("Grabbable is null");
+        return subject != null;
     }
 }

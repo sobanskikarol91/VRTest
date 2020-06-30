@@ -1,5 +1,4 @@
 ﻿using BNG;
-using System;
 
 public interface ISnapCondition
 {
@@ -11,12 +10,6 @@ public interface IUnSnapCondition
     bool ShouldUnsnap(Grabbable subject);
 }
 
-public interface ISnapEffect
-{
-    void SnapEffect(Grabbable subject);
-    event Action OnCompletedAnimation;
-}
-
 public interface ISnapAreaExit
 {
     void SnapExit(Grabbable subject);
@@ -25,4 +18,19 @@ public interface ISnapAreaExit
 public interface ISnapAreaEnter
 {
     void SnapEnter(Grabbable subject);
+}
+
+public interface ISnapOnRelease
+{
+    void Snap(Grabbable subject);
+}
+
+public interface IUnsnap
+{
+    void OnUnsnap(GrabbableEventArgs subject);
+}
+
+public interface ISnapNotUsed
+{
+    void SnapNotUsed(GrabbableEventArgs subject);
 }

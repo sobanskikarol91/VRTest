@@ -6,8 +6,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using static OVRHand;
 
-namespace BNG {
-    public class HandTracking : MonoBehaviour {
+namespace BNG
+{
+    public class HandTracking : MonoBehaviour
+    {
 
         public OVRHand LeftHand;
         public OVRHand RightHand;
@@ -34,7 +36,7 @@ namespace BNG {
         public float RightIndexPinchStrength;
         public Vector3 RightIndexPosition;
         public Vector3 LeftIndexPosition;
-
+        public  static HandTracking instance;
         /// <summary>
         /// Pinching will activate Grabber attached to Index Finger
         /// </summary>
@@ -50,41 +52,50 @@ namespace BNG {
         /// </summary>
         public bool DisableHandTrackingInEditor = true;
 
-        void Awake() {
+        void Awake()
+        {
+            instance = this;
             leftSkele = LeftHand.GetComponent<OVRSkeleton>();
             rightSkele = RightHand.GetComponent<OVRSkeleton>();
 
             // This fixes a Unity crash to desktop in Oculus 1.32 when using hand tracking on start in editor mode
-            if (DisableHandTrackingInEditor && Application.isEditor && leftSkele != null) {
+            if (DisableHandTrackingInEditor && Application.isEditor && leftSkele != null)
+            {
                 leftSkele.enabled = false;
                 rightSkele.enabled = false;
 
                 // See https://forum.unity.com/threads/released-vr-interaction-framework-for-oculus-quest.817614/reply?quote=5468730
-                Debug.Log("Disabling Hand Tracking in Editor due to CTD bug in Oculus SDK");
+             //   Debug.Log("Disabling Hand Tracking in Editor due to CTD bug in Oculus SDK");
             }
         }
 
-        void Update() {
+        void Update()
+        {
 
             updateHandTracking();
 
-            if(IsHandTracking) {
+            if (IsHandTracking)
+            {
                 LeftHandConfidence = LeftHand.GetFingerConfidence(HandFinger.Index);
                 RightHandConfidence = RightHand.GetFingerConfidence(HandFinger.Index);
 
-                if(leftSkele != null && leftSkele.Bones != null) {
+                if (leftSkele != null && leftSkele.Bones != null)
+                {
                     leftIndexBone = leftSkele.Bones.FirstOrDefault(x => x.Id == OVRSkeleton.BoneId.Hand_IndexTip);
-                    if (leftIndexBone != null) {
+                    if (leftIndexBone != null)
+                    {
                         LeftIndexPosition = leftIndexBone.Transform.position;
                     }
                 }
-                
+
                 IsLeftIndexPinching = LeftHand.GetFingerIsPinching(HandFinger.Index) && LeftHandConfidence == TrackingConfidence.High;
                 LeftIndexPinchStrength = LeftHand.GetFingerPinchStrength(HandFinger.Index);
 
-                if(rightSkele && rightSkele.Bones != null) {
+                if (rightSkele && rightSkele.Bones != null)
+                {
                     rightIndexBone = rightSkele.Bones.FirstOrDefault(x => x.Id == OVRSkeleton.BoneId.Hand_IndexTip);
-                    if (rightIndexBone != null) {
+                    if (rightIndexBone != null)
+                    {
                         RightIndexPosition = rightIndexBone.Transform.position;
                     }
                 }
@@ -96,29 +107,35 @@ namespace BNG {
             updateGrabbers();
         }
 
-        void updateHandTracking() {
-            
+        void updateHandTracking()
+        {
+
             IsHandTracking = OVRInput.GetActiveController() == OVRInput.Controller.Hands;
 
-            if(IsHandTracking != wasHandTracking) {
+            if (IsHandTracking != wasHandTracking)
+            {
                 onHandTrackingChange(IsHandTracking);
             }
 
             wasHandTracking = IsHandTracking;
         }
 
-        void onHandTrackingChange(bool handTrackingEnabled) {
+        void onHandTrackingChange(bool handTrackingEnabled)
+        {
             // We'll consider a controller active for anything but Hands
             LeftModelHolder.gameObject.SetActive(!handTrackingEnabled);
             RightModelHolder.gameObject.SetActive(!handTrackingEnabled);
         }
 
-        void updateGrabbers() {
+        void updateGrabbers()
+        {
 
-            if(LeftGrabber) {
+            if (LeftGrabber)
+            {
                 LeftGrabber.gameObject.SetActive(IsHandTracking);
 
-                if (IsHandTracking) {
+                if (IsHandTracking)
+                {
 
                     LeftGrabber.transform.position = LeftIndexPosition;
                     LeftGrabber.ForceGrab = DoPinchToGrab && IsLeftIndexPinching;
@@ -126,15 +143,24 @@ namespace BNG {
                 }
             }
 
-            if (RightGrabber) {
+            if (RightGrabber)
+            {
                 RightGrabber.gameObject.SetActive(IsHandTracking);
 
-                if (IsHandTracking) {
+                if (IsHandTracking)
+                {
                     RightGrabber.transform.position = RightIndexPosition;
                     RightGrabber.ForceGrab = DoPinchToGrab && IsRightIndexPinching;
                     RightGrabber.ForceRelease = DoPinchToGrab && IsRightIndexPinching == false;
                 }
             }
+        }
+
+        public Grabber GetGrabber(ControllerHand hand)
+        {
+            if (hand == ControllerHand.Left) return LeftGrabber;
+            else if (hand == ControllerHand.Right) return RightGrabber;
+            else return null;
         }
     }
 }

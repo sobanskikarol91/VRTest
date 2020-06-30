@@ -5,32 +5,77 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class SnapSlot : MonoBehaviour
-{
-    [SerializeField] Grabbable ClosestGrabbable;
+public enum SnapState { None, IsWaiting, Snapped }
 
+public class SnapSlot : GrabbableEvents
+{
     public event Action snapCompleted;
-    public Grabbable GrabbableInSlot { get; private set; }
     public bool IsEmpty => !IsFull;
-    public bool IsFull => GrabbableInSlot;
+    public bool IsFull => grabbable;
+    private bool isGrabberInRange;
 
     private ISnapCondition[] snapConditions;
     private IUnSnapCondition[] unsnapConditions;
-    private ISnapEffect[] snapEffects;
     private ISnapAreaExit[] snapAreaExits;
+    private ISnapOnRelease[] snapReleases;
+    private IUnsnap[] unsnaps;
     private ISnapAreaEnter[] snapAreaEnters;
+    private ISnapNotUsed[] snapNotUsed;
     private GrabbablesInTrigger grabbableInTrigger;
+    private Grabbable snappedItem;
+    private Grabbable grabbable;
+    private Grabber grabber;
+    private SnapState snapState;
 
 
     private void Awake()
     {
         FindReferences();
-        SubscribeEvents();
     }
 
-    private void SubscribeEvents()
+    public override void OnBecomesClosestGrabbable(object sender, GrabbableEventArgs e)
     {
-        Array.ForEach(snapEffects, s => s.OnCompletedAnimation += OnSnapCompleted);
+        if (isGrabberInRange)
+        {
+            Debug.Log("isGrabberInRange");
+            return;
+        }
+
+        Debug.Log("OnBecomesClosestGrabbable: ");
+
+        grabbable = e.grabber.HeldGrabbable;
+        grabber = e.grabber;
+        grabber.Drop += OnGrabRelease;
+
+        if (AreSnapConditionsMet())
+            EnterToSnapArea();
+
+        isGrabberInRange = true;
+    }
+
+    public override void OnNoLongerClosestGrabbable(object sender, GrabbableEventArgs e)
+    {
+        e.grabber.Drop -= OnGrabRelease;
+
+        if (snapState == SnapState.IsWaiting)
+            SnapNotUsed();
+
+        isGrabberInRange = false;
+    }
+
+    public override void OnGrab(Grabber grabber)
+    {
+        if (snappedItem == null) return;
+
+        Unsnap();
+    }
+
+    public void OnGrabRelease(GrabbableEventArgs args)
+    {
+        if (grabbable == null) return;
+
+        Debug.Log("GrabRelease: " + args.grabber.HeldGrabbable);
+        Snap();
     }
 
     private void FindReferences()
@@ -38,37 +83,46 @@ public class SnapSlot : MonoBehaviour
         grabbableInTrigger = GetComponent<GrabbablesInTrigger>();
         snapConditions = GetComponents<ISnapCondition>();
         unsnapConditions = GetComponents<IUnSnapCondition>();
-        snapEffects = GetComponents<ISnapEffect>();
+        snapReleases = GetComponents<ISnapOnRelease>();
         snapAreaExits = GetComponents<ISnapAreaExit>();
         snapAreaEnters = GetComponents<ISnapAreaEnter>();
-    }
-
-    private void Update()
-    {
-        FindClosestGrabbableInRange();
-    }
-
-    void FindClosestGrabbableInRange()
-    {
-        ClosestGrabbable = grabbableInTrigger.NearbyGrabbables.FirstOrDefault().Value;
-
-        if (AreSnapConditionsMet())
-            SnapGrabbableToSlot();
+        unsnaps = GetComponents<IUnsnap>();
+        snapNotUsed = GetComponents<ISnapNotUsed>();
     }
 
     private bool AreSnapConditionsMet()
     {
-        return snapConditions.All(s => s.ShouldSnap(ClosestGrabbable));
+        Debug.Log("AreSnapConditionsMet : " + snapConditions.All(s => s.ShouldSnap(grabbable)));
+        return snapConditions.All(s => s.ShouldSnap(grabbable));
     }
 
     protected bool AreUnsnapConditionsMet()
     {
-        return unsnapConditions.All(s => s.ShouldUnsnap(ClosestGrabbable));
+        return unsnapConditions.All(s => s.ShouldUnsnap(grabbable));
     }
 
-    private void SnapGrabbableToSlot()
+    private void EnterToSnapArea()
     {
-        Array.ForEach(snapEffects, s => s.SnapEffect(ClosestGrabbable));
+        Debug.Log("Snap AreaEnter");
+        snapState = SnapState.IsWaiting;
+        Array.ForEach(snapAreaEnters, s => s.SnapEnter(grabbable));
+    }
+
+    private void Unsnap()
+    {
+        Debug.Log("Unsnap");
+        Array.ForEach(unsnaps, s => s.OnUnsnap(null));
+        grabber.TryRelease();
+        grabber.GrabGrabbable(snappedItem);
+        snappedItem = null;
+        snapState = SnapState.None;
+    }
+
+    void Snap()
+    {
+        snappedItem = grabbable;
+        Array.ForEach(snapReleases, s => s.Snap(grabbable));
+        snapState = SnapState.Snapped;
     }
 
     private void OnSnapCompleted()
@@ -76,13 +130,9 @@ public class SnapSlot : MonoBehaviour
         snapCompleted?.Invoke();
     }
 
-    private void OnSnapExit()
+    void SnapNotUsed()
     {
-        Array.ForEach(snapAreaExits, s => s.SnapExit(ClosestGrabbable));
-    }
-
-    private void OnSnapEnter()
-    {
-        Array.ForEach(snapAreaEnters, s => s.SnapEnter(ClosestGrabbable));
+        Debug.Log("SnapNotUsed");
+        Unsnap();
     }
 }
