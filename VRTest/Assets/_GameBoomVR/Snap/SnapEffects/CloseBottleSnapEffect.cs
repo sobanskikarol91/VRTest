@@ -9,6 +9,7 @@ public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaE
     private readonly float prepareToSpinTime = .2f;
     private readonly float spinTime = .5f;
 
+
     public void SnapEnter(Grabbable subject)
     {
         grabbable = subject;
@@ -29,17 +30,12 @@ public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaE
 
         grabbable.GetComponent<Rigidbody>().isKinematic = true;
         grabbable.GetComponent<Collider>().enabled = false;
-        grabbable.GetComponent<Collider>().isTrigger = true;
+        grabbable.GetComponent<Grabbable>().enabled = false;
     }
 
     public void OnRelease(Grabbable subject)
     {
         grabbable.transform.SetParent(transform, true);
-        grabbable.GetComponent<Rigidbody>().isKinematic = true;
-        grabbable.GetComponent<Collider>().enabled = false;
-        grabbable.GetComponent<Collider>().isTrigger = true;
-        grabbable.GetComponent<Grabbable>().enabled = false;
-
         SpinCap();
     }
 
