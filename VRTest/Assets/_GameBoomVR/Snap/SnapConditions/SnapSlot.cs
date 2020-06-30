@@ -18,16 +18,20 @@ public class SnapSlot : GrabbableEvents
     private IUnsnap[] unsnaps;
     private ISnapAreaEnter[] snapAreaEnters;
     private ISnapCanceled[] snapCalceled;
+    private ISnapOnBeginning[] snapBegining;
     private SnapState snapState;
     private GrabbablesInTrigger grabbableInTrigger;
-    private Grabbable grabbable, snappedItem;
+    private Grabbable grabbable;
     private Grabber grabber;
 
+    [SerializeField] Grabbable snappedItem;
 
     private void Awake()
     {
         FindReferences();
+        SnapOnBegining();
     }
+
 
     private void FindReferences()
     {
@@ -39,6 +43,7 @@ public class SnapSlot : GrabbableEvents
         snapAreaEnters = GetComponents<ISnapAreaEnter>();
         unsnaps = GetComponents<IUnsnap>();
         snapCalceled = GetComponents<ISnapCanceled>();
+        snapBegining = GetComponents<ISnapOnBeginning>();
     }
 
     public override void OnBecomesClosestGrabbable(object sender, GrabbableEventArgs e)
@@ -111,6 +116,21 @@ public class SnapSlot : GrabbableEvents
         grabber.GrabGrabbable(snappedItem);
         snappedItem = null;
         snapState = SnapState.None;
+    }
+
+    void SnapOnBegining()
+    {
+        if (snappedItem == null) return;
+
+        snappedItem.GetComponent<Rigidbody>().isKinematic = true;
+        snappedItem.GetComponent<Collider>().enabled = false;
+        snappedItem.GetComponent<Grabbable>().enabled = false;
+        snappedItem.transform.SetParent(transform);
+        snappedItem.transform.localPosition = Vector3.zero;
+
+        grabbable = snappedItem;
+        snapState = SnapState.IsWaitingForRelease;
+        Array.ForEach(snapBegining, s => s.Init(grabbable));
     }
 
     void Snap()

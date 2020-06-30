@@ -34,3 +34,8 @@ public interface ISnapCanceled
 {
     void SnapCanceled(GrabbableEventArgs subject);
 }
+
+internal interface ISnapOnBeginning
+{
+    void Init(Grabbable grabbable);
+}

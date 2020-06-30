@@ -2,7 +2,7 @@
 using BNG;
 using UnityEngine;
 
-public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaExit, ISnapOnRelease, IUnsnap
+public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaExit, ISnapOnRelease, IUnsnap, ISnapOnBeginning
 {
     [SerializeField] Transform aboveCap;
     private Grabbable grabbable;
@@ -67,10 +67,10 @@ public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaE
         collider.enabled = true;
         GetComponent<Grabbable>().enabled = true;
         Debug.Log("SpinAnimCompleted");
-    } 
-    
-    void OpenBottle()
-    {
+    }
 
+    public void Init(Grabbable grabbable)
+    {
+        this.grabbable = grabbable;
     }
 }
