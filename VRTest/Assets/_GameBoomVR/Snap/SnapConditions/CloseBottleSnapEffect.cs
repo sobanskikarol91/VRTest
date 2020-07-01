@@ -11,8 +11,9 @@ public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaE
     private new Collider collider;
 
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         collider = GetComponent<Collider>();
     }
 
@@ -35,7 +36,7 @@ public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaE
         iTween.RotateTo(grabbable.gameObject, iTween.Hash("rotation", new Vector3(0, 0, 90), "time", prepareToSpinTime, "easetype", iTween.EaseType.linear, "islocal", true));
 
         grabbable.GetComponent<Rigidbody>().isKinematic = true;
-        grabbable.GetComponent<Collider>().enabled = false;
+        grabbable.GetComponentInChildren<Collider>().enabled = false;
         grabbable.GetComponent<Grabbable>().enabled = false;
     }
 
@@ -57,8 +58,8 @@ public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaE
     public void OnUnsnap(GrabbableEventArgs subject)
     {
         grabbable.GetComponent<Rigidbody>().isKinematic = false;
-        grabbable.GetComponent<Collider>().enabled = true;
-        grabbable.GetComponent<Collider>().isTrigger = false;
+        grabbable.GetComponentInChildren<Collider>().enabled = true;
+        grabbable.GetComponentInChildren<Collider>().isTrigger = false;
         grabbable.GetComponent<Grabbable>().enabled = true;
     }
 

@@ -123,7 +123,7 @@ public class SnapSlot : GrabbableEvents
         if (snappedItem == null) return;
 
         snappedItem.GetComponent<Rigidbody>().isKinematic = true;
-        snappedItem.GetComponent<Collider>().enabled = false;
+        snappedItem.GetComponentInChildren<Collider>().enabled = false;
         snappedItem.GetComponent<Grabbable>().enabled = false;
         snappedItem.transform.SetParent(transform);
         snappedItem.transform.localPosition = Vector3.zero;

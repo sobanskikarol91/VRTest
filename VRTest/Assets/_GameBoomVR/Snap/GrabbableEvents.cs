@@ -19,7 +19,7 @@ namespace BNG
 
         protected InputBridge input;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             grab = GetComponent<Grabbable>();
             input = InputBridge.Instance;
