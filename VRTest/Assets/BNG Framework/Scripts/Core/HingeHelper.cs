@@ -93,11 +93,11 @@ namespace BNG {
             }
         }
 
-        public override void OnGrabRelease() {
+        public override void OnRelease() {
             rigid.velocity = Vector3.zero;
             rigid.angularVelocity = Vector3.zero;
 
-            base.OnGrabRelease();
+            base.OnRelease();
         }
 
         public void OnHingeChange(float hingeAmount) {

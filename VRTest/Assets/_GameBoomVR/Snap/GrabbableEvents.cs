@@ -25,6 +25,11 @@ namespace BNG
             input = InputBridge.Instance;
         }
 
+        public virtual bool CanBeGrabbed()
+        {
+            return true;
+        }
+
         /// <summary>
         /// Item has been grabbed by a Grabber
         /// </summary>
@@ -37,7 +42,7 @@ namespace BNG
         /// <summary>
         /// Has been dropped from the Grabber
         /// </summary>
-        public virtual void OnGrabRelease()
+        public virtual void OnRelease()
         {
 
         }
@@ -51,17 +56,11 @@ namespace BNG
 
         }
 
-        public virtual void OnBecomesClosestGrabbable(object sender, GrabbableEventArgs e)
-        {
-
-        }
-
+        /// <summary>
+        /// No longer closest grabbable. May need to disable highlight, ring, etc.
+        /// </summary>
+        /// <param name="touchingHand"></param>
         public virtual void OnNoLongerClosestGrabbable(ControllerHand touchingHand)
-        {
-
-        }
-
-        public virtual void OnNoLongerClosestGrabbable(object sender, GrabbableEventArgs e)
         {
 
         }
@@ -75,7 +74,6 @@ namespace BNG
 
         }
 
-
         /// <summary>
         /// Fires if this was the closest remote grabbable last frame, but not this frame
         /// </summary>
@@ -84,7 +82,6 @@ namespace BNG
         {
 
         }
-
 
         /// <summary>
         /// Amount of Grip (0-1). Only fired if object is being held.
@@ -174,6 +171,16 @@ namespace BNG
         {
 
         }
+
+        public virtual void OnBecomesClosestGrabbable(object sender, GrabbableEventArgs e)
+        {
+
+        }
+
+        public virtual void OnNoLongerClosestGrabbable(object sender, GrabbableEventArgs e)
+        {
+
+        }
     }
 
     public class GrabbableEventArgs : EventArgs
@@ -187,6 +194,4 @@ namespace BNG
             this.grabber = grabber;
         }
     }
-
-
 }

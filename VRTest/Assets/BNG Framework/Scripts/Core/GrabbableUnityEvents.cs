@@ -42,9 +42,9 @@ namespace BNG
         /// <summary>
         /// Has been dropped from the Grabber
         /// </summary>
-        public override void OnGrabRelease()
+        public override void OnRelease()
         {
-            base.OnGrabRelease();
+            base.OnRelease();
 
             if (onRelease != null)
             {

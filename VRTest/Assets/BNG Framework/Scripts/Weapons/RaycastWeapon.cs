@@ -245,7 +245,7 @@ namespace BNG {
 
             base.OnButton2Down();
         }
-        public override void OnGrabRelease() {
+        public override void OnRelease() {
             if(SecondHandGrabbable != null && SecondHandGrabbable.GrabPhysics != GrabPhysics.Kinematic && secondHandRigid != null && secondHandRigid.isKinematic) {
                 secondHandRigid.isKinematic = false;
             }

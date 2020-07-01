@@ -118,10 +118,10 @@ namespace BNG {
             base.OnGrab(grabber);
         }
 
-        public override void OnGrabRelease() {
+        public override void OnRelease() {
             onReleaseGrapple();
 
-            base.OnGrabRelease();
+            base.OnRelease();
         }
 
         // Called when grappling previous frame, but not this one

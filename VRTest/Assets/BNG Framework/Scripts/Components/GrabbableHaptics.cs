@@ -25,7 +25,7 @@ namespace BNG {
             currentGrabber = grabber;
         }
 
-        public override void OnGrabRelease() {
+        public override void OnRelease() {
             currentGrabber = null;
         }
 

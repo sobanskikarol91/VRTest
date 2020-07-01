@@ -54,7 +54,7 @@ namespace BNG {
             bngController.GravityEnabled = gravityOn;
         }
 
-        public override void OnGrabRelease() {
+        public override void OnRelease() {
             stopJet();
 
             // enforce gravity
