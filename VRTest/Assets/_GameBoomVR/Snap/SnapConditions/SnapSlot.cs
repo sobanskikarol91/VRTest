@@ -114,6 +114,7 @@ public class SnapSlot : GrabbableEvents
     void SetColliders(bool isEnabled)
     {
         List<Collider> disabledColliders = iteamReadyToSnap.GetComponentsInChildren<Collider>(false).ToList();
+
         for (int x = 0; x < disabledColliders.Count; x++)
         {
             Collider c = disabledColliders[x];
@@ -142,12 +143,12 @@ public class SnapSlot : GrabbableEvents
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Enter Triger: " + other.gameObject.name, other.gameObject);
-
         grabber = other.gameObject.GetComponent<Grabber>();
 
         if (grabber == null) return;
         grabber.Drop += OnGrabRelease;
+
+        Debug.Log(gameObject.name + " Enter Triger: " + other.gameObject.name, other.gameObject);
 
         if (grabber.HeldGrabbable == null)
         {
@@ -168,11 +169,9 @@ public class SnapSlot : GrabbableEvents
 
     private void OnTriggerExit(Collider other)
     {
-        Debug.Log("Exit Triger: " + other.gameObject.name, other.gameObject);
-
-        Grabber grabber = GetComponent<Grabber>();
+        grabber = other.gameObject.GetComponent<Grabber>();
         if (grabber == null) return;
-
+        Debug.Log(gameObject.name + " Exit Triger: " + other.gameObject.name, other.gameObject);
         grabber.Drop -= OnGrabRelease;
 
         if (snapState == SnapState.IsWaitingForRelease)
