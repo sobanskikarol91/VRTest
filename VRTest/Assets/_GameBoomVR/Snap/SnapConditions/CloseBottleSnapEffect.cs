@@ -1,5 +1,4 @@
-﻿using System;
-using BNG;
+﻿using BNG;
 using UnityEngine;
 
 public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaExit, ISnapOnRelease, ISnapOnBeginning
@@ -8,17 +7,11 @@ public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaE
     private Grabbable grabbable;
     private readonly float prepareToSpinTime = .2f;
     private readonly float spinTime = .5f;
-    private new Collider collider;
 
-
-    protected override void Awake()
-    {
-        base.Awake();
-        collider = GetComponent<Collider>();
-    }
 
     public void SnapEnter(Grabbable subject)
     {
+        
         grabbable = subject;
         MoveToTheBottle();
     }
@@ -42,23 +35,18 @@ public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaE
 
     public void OnRelease(Grabbable subject)
     {
-        grabbable.transform.SetParent(transform, true);
         CloseCap();
     }
 
     void CloseCap()
     {
         Debug.Log("Spin");
-        collider.enabled = false;
-        GetComponent<Grabbable>().enabled = false;
         iTween.MoveTo(grabbable.gameObject, iTween.Hash("position", Vector3.zero, "time", spinTime, "islocal", true, "oncomplete", nameof(CloseAnimCompleted), "oncompletetarget", gameObject));
         iTween.RotateTo(grabbable.gameObject, iTween.Hash("rotation", new Vector3(180, 0, 90), "time", spinTime, "easetype", iTween.EaseType.linear, "islocal", true));
     }
 
     void CloseAnimCompleted()
     {
-        collider.enabled = true;
-        GetComponent<Grabbable>().enabled = true;
         Debug.Log("SpinAnimCompleted");
     }
 

@@ -1,5 +1,6 @@
 ﻿using BNG;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -71,9 +72,19 @@ public class SnapSlot : GrabbableEvents
 
     public void OnGrabRelease(GrabbableEventArgs args)
     {
+        if (snappedItem == null) return;
         Debug.Log("GrabRelease: " + args.grabber.HeldGrabbable);
         snapState = SnapState.Snapped;
+        snappedItem.transform.SetParent(transform, true);
+        SetColliders(false);
+        SetRigidbody(true);
         Array.ForEach(snapReleases, s => s.OnRelease(args.grabbable));
+    }
+
+    private void SetRigidbody(bool isKinematic)
+    {
+        Rigidbody rb = snappedItem.GetComponent<Rigidbody>();
+        if (rb) rb.isKinematic = isKinematic;
     }
 
     private bool AreSnapConditionsMet()
@@ -88,29 +99,33 @@ public class SnapSlot : GrabbableEvents
         return unsnapConditions.All(s => s.ShouldUnsnap(iteamReadyToSnap));
     }
 
-    private void EnterToSnapArea()
-    {
-        Debug.Log("Snap AreaEnter");
-        Snap();
-    }
-
     private void Unsnap()
     {
         Debug.Log("Unsnap");
         Array.ForEach(unsnaps, s => s.OnUnsnap(null));
 
-        snappedItem.GetComponent<Rigidbody>().isKinematic = true;
-        snappedItem.GetComponentInChildren<Collider>().enabled = false;
-        snappedItem.GetComponent<Grabbable>().enabled = false;
-
-        //grabber.TryRelease();
+        SetColliders(true);
+        SetRigidbody(false);
         grabber.GrabGrabbable(snappedItem);
         snappedItem = null;
         snapState = SnapState.None;
     }
 
+    void SetColliders(bool isEnabled)
+    {
+        List<Collider> disabledColliders = iteamReadyToSnap.GetComponentsInChildren<Collider>(false).ToList();
+        for (int x = 0; x < disabledColliders.Count; x++)
+        {
+            Collider c = disabledColliders[x];
+            c.enabled = isEnabled;
+        }
+
+        iteamReadyToSnap.enabled = isEnabled;
+    }
+
     void Snap()
     {
+        Debug.Log("Snap");
         snapState = SnapState.IsWaitingForRelease;
         Array.ForEach(snapAreaEnters, s => s.SnapEnter(iteamReadyToSnap));
         snappedItem = iteamReadyToSnap;
@@ -118,7 +133,7 @@ public class SnapSlot : GrabbableEvents
 
     void SnapCanceled(GrabbableEventArgs args)
     {
-        Debug.Log("SnapNotUsed");
+        Debug.Log("SnapCanceled");
         grabber.GrabGrabbable(snappedItem);
         Array.ForEach(snapCalceled, s => s.SnapCanceled(args));
         snappedItem = null;
@@ -129,17 +144,26 @@ public class SnapSlot : GrabbableEvents
     {
         Debug.Log("Enter Triger: " + other.gameObject.name, other.gameObject);
 
-        grabber = GetComponent<Grabber>();
-        if (grabber == null) return;
+        grabber = other.gameObject.GetComponent<Grabber>();
 
-        iteamReadyToSnap = grabber.HeldGrabbable;
+        if (grabber == null) return;
         grabber.Drop += OnGrabRelease;
+
+        if (grabber.HeldGrabbable == null)
+        {
+            Debug.Log("Held Item null Trigger Enter");
+            return;
+        }
+
+        Debug.Log("Trzyma item:" + grabber.HeldGrabbable.name);
+        iteamReadyToSnap = grabber.HeldGrabbable;
+
 
         if (iteamReadyToSnap == null)
             Debug.Log("Held item is null");
 
         if (iteamReadyToSnap && AreSnapConditionsMet())
-            EnterToSnapArea();
+            Snap();
     }
 
     private void OnTriggerExit(Collider other)

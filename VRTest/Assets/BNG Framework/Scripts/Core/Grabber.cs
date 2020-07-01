@@ -568,7 +568,7 @@ namespace BNG
 
             // Just grabbed something, no longer fresh.
             FreshGrip = false;
-            Debug.Log("Grabbb in grabber");
+            Debug.Log("Grabbb in grabber: " + item.name);
             // Let item know it's been grabbed
             item.GrabItem(this);
             Grab?.Invoke(new GrabbableEventArgs(item, this));
@@ -614,8 +614,8 @@ namespace BNG
         {
             if (HeldGrabbable != null && HeldGrabbable.CanBeDropped)
             {
-                HeldGrabbable.DropItem(this);
                 Drop?.Invoke(new GrabbableEventArgs(HeldGrabbable, this));
+                HeldGrabbable.DropItem(this);
             }
 
             // No longer try to bring flying grabbable to us
