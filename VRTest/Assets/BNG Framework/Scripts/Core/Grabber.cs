@@ -262,10 +262,6 @@ namespace BNG
                         for (int x = 0; x < ge.Length; x++)
                         {
                             ge[x].OnNoLongerClosestGrabbable(HandSide);
-
-                            GrabbableEventArgs args = new GrabbableEventArgs(grabsInTrigger.ClosestGrabbable, this);
-
-                            ge[x].OnNoLongerClosestGrabbable(this, args);
                         }
                     }
                     previousClosest.RemoveValidGrabber(this);
@@ -572,7 +568,7 @@ namespace BNG
 
             // Just grabbed something, no longer fresh.
             FreshGrip = false;
-
+            Debug.Log("Grabbb in grabber");
             // Let item know it's been grabbed
             item.GrabItem(this);
             Grab?.Invoke(new GrabbableEventArgs(item, this));

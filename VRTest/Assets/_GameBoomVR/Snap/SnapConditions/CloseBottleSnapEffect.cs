@@ -2,7 +2,7 @@
 using BNG;
 using UnityEngine;
 
-public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaExit, ISnapOnRelease, IUnsnap, ISnapOnBeginning
+public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaExit, ISnapOnRelease, ISnapOnBeginning
 {
     [SerializeField] Transform aboveCap;
     private Grabbable grabbable;
@@ -53,14 +53,6 @@ public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaE
         GetComponent<Grabbable>().enabled = false;
         iTween.MoveTo(grabbable.gameObject, iTween.Hash("position", Vector3.zero, "time", spinTime, "islocal", true, "oncomplete", nameof(CloseAnimCompleted), "oncompletetarget", gameObject));
         iTween.RotateTo(grabbable.gameObject, iTween.Hash("rotation", new Vector3(180, 0, 90), "time", spinTime, "easetype", iTween.EaseType.linear, "islocal", true));
-    }
-
-    public void OnUnsnap(GrabbableEventArgs subject)
-    {
-        grabbable.GetComponent<Rigidbody>().isKinematic = false;
-        grabbable.GetComponentInChildren<Collider>().enabled = true;
-        grabbable.GetComponentInChildren<Collider>().isTrigger = false;
-        grabbable.GetComponent<Grabbable>().enabled = true;
     }
 
     void CloseAnimCompleted()

@@ -9,7 +9,7 @@ public class SnapSlot : GrabbableEvents
 {
     public bool IsEmpty => !IsFull;
     public bool IsFull => snappedItem;
-    private bool isGrabberInRange;
+
 
     private ISnapCondition[] snapConditions;
     private IUnSnapCondition[] unsnapConditions;
@@ -19,19 +19,35 @@ public class SnapSlot : GrabbableEvents
     private ISnapAreaEnter[] snapAreaEnters;
     private ISnapCanceled[] snapCalceled;
     private ISnapOnBeginning[] snapBegining;
-    private SnapState snapState;
+
     private GrabbablesInTrigger grabbableInTrigger;
-    private Grabbable grabbable;
+    private Grabbable iteamReadyToSnap;
     private Grabber grabber;
 
     [SerializeField] Grabbable snappedItem;
+    [SerializeField] SnapState snapState;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         FindReferences();
         SnapOnBegining();
     }
 
+    void SnapOnBegining()
+    {
+        if (snappedItem == null) return;
+
+        snappedItem.GetComponent<Rigidbody>().isKinematic = true;
+        snappedItem.GetComponentInChildren<Collider>().enabled = false;
+        snappedItem.GetComponent<Grabbable>().enabled = false;
+        snappedItem.transform.SetParent(transform);
+        snappedItem.transform.localPosition = Vector3.zero;
+
+        iteamReadyToSnap = snappedItem;
+        snapState = SnapState.Snapped;
+        Array.ForEach(snapBegining, s => s.Init(iteamReadyToSnap));
+    }
 
     private void FindReferences()
     {
@@ -46,60 +62,30 @@ public class SnapSlot : GrabbableEvents
         snapBegining = GetComponents<ISnapOnBeginning>();
     }
 
-    public override void OnBecomesClosestGrabbable(object sender, GrabbableEventArgs e)
-    {
-        if (isGrabberInRange)
-        {
-            Debug.Log("isGrabberInRange");
-            return;
-        }
-
-        Debug.Log("OnBecomesClosestGrabbable: ");
-
-        grabbable = e.grabber.HeldGrabbable;
-        grabber = e.grabber;
-        grabber.Drop += OnGrabRelease;
-
-        if (grabbable && AreSnapConditionsMet())
-            EnterToSnapArea();
-
-        isGrabberInRange = true;
-    }
-
-    public override void OnNoLongerClosestGrabbable(object sender, GrabbableEventArgs e)
-    {
-        e.grabber.Drop -= OnGrabRelease;
-
-        if (snapState == SnapState.IsWaitingForRelease)
-            SnapCanceled(e);
-
-        isGrabberInRange = false;
-    }
-
     public override void OnGrab(Grabber grabber)
     {
+        this.grabber = grabber;
         if (IsFull && AreUnsnapConditionsMet())
             Unsnap();
     }
 
     public void OnGrabRelease(GrabbableEventArgs args)
     {
-        if (grabbable == null) return;
-
         Debug.Log("GrabRelease: " + args.grabber.HeldGrabbable);
         snapState = SnapState.Snapped;
-        Array.ForEach(snapReleases, s => s.OnRelease(grabbable));
+        Array.ForEach(snapReleases, s => s.OnRelease(args.grabbable));
     }
 
     private bool AreSnapConditionsMet()
     {
-        Debug.Log("AreSnapConditionsMet : " + snapConditions.All(s => s.ShouldSnap(grabbable)));
-        return snapConditions.All(s => s.ShouldSnap(grabbable));
+        Debug.Log("AreSnapConditionsMet : " + snapConditions.All(s => s.ShouldSnap(iteamReadyToSnap)));
+        return snapConditions.All(s => s.ShouldSnap(iteamReadyToSnap));
     }
 
     protected bool AreUnsnapConditionsMet()
     {
-        return unsnapConditions.All(s => s.ShouldUnsnap(grabbable));
+        Debug.Log("Unsnap requrements:" + unsnapConditions.All(s => s.ShouldUnsnap(iteamReadyToSnap)));
+        return unsnapConditions.All(s => s.ShouldUnsnap(iteamReadyToSnap));
     }
 
     private void EnterToSnapArea()
@@ -112,32 +98,22 @@ public class SnapSlot : GrabbableEvents
     {
         Debug.Log("Unsnap");
         Array.ForEach(unsnaps, s => s.OnUnsnap(null));
-        grabber.TryRelease();
+
+        snappedItem.GetComponent<Rigidbody>().isKinematic = true;
+        snappedItem.GetComponentInChildren<Collider>().enabled = false;
+        snappedItem.GetComponent<Grabbable>().enabled = false;
+
+        //grabber.TryRelease();
         grabber.GrabGrabbable(snappedItem);
         snappedItem = null;
         snapState = SnapState.None;
     }
 
-    void SnapOnBegining()
-    {
-        if (snappedItem == null) return;
-
-        snappedItem.GetComponent<Rigidbody>().isKinematic = true;
-        snappedItem.GetComponentInChildren<Collider>().enabled = false;
-        snappedItem.GetComponent<Grabbable>().enabled = false;
-        snappedItem.transform.SetParent(transform);
-        snappedItem.transform.localPosition = Vector3.zero;
-
-        grabbable = snappedItem;
-        snapState = SnapState.IsWaitingForRelease;
-        Array.ForEach(snapBegining, s => s.Init(grabbable));
-    }
-
     void Snap()
     {
         snapState = SnapState.IsWaitingForRelease;
-        Array.ForEach(snapAreaEnters, s => s.SnapEnter(grabbable));
-        snappedItem = grabbable;
+        Array.ForEach(snapAreaEnters, s => s.SnapEnter(iteamReadyToSnap));
+        snappedItem = iteamReadyToSnap;
     }
 
     void SnapCanceled(GrabbableEventArgs args)
@@ -147,5 +123,35 @@ public class SnapSlot : GrabbableEvents
         Array.ForEach(snapCalceled, s => s.SnapCanceled(args));
         snappedItem = null;
         snapState = SnapState.None;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Enter Triger: " + other.gameObject.name, other.gameObject);
+
+        grabber = GetComponent<Grabber>();
+        if (grabber == null) return;
+
+        iteamReadyToSnap = grabber.HeldGrabbable;
+        grabber.Drop += OnGrabRelease;
+
+        if (iteamReadyToSnap == null)
+            Debug.Log("Held item is null");
+
+        if (iteamReadyToSnap && AreSnapConditionsMet())
+            EnterToSnapArea();
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        Debug.Log("Exit Triger: " + other.gameObject.name, other.gameObject);
+
+        Grabber grabber = GetComponent<Grabber>();
+        if (grabber == null) return;
+
+        grabber.Drop -= OnGrabRelease;
+
+        if (snapState == SnapState.IsWaitingForRelease)
+            SnapCanceled(null);
     }
 }
