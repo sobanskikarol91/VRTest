@@ -10,10 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 509243633845048709}
   - component: {fileID: 509243633845048765}
-  - component: {fileID: 509243633845048767}
   - component: {fileID: 509243633845048705}
   - component: {fileID: 509243633845048704}
-  - component: {fileID: 509243633845048706}
   - component: {fileID: 509243633845048766}
   - component: {fileID: 509243633845048762}
   m_Layer: 0
@@ -35,6 +33,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 509243633946285683}
+  - {fileID: 509243633979982652}
   m_Father: {fileID: 509243633934920350}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -51,51 +50,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.04
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &509243633845048767
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 509243633845048708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5cdea428d48e2bb488d33d5f75c39bb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  BeingHeld: 0
-  GrabButton: 0
-  Grabtype: 0
-  GrabPhysics: 2
-  GrabMechanic: 1
-  GrabSpeed: 7.5
-  RemoteGrabbable: 0
-  RemoteGrabDistance: 2
-  ThrowForceMultiplier: 2
-  ThrowForceMultiplierAngular: 1.5
-  BreakDistance: 1
-  HideHandGraphics: 0
-  ParentToHands: 0
-  ParentHandModel: 0
-  SnapHandModel: 1
-  CustomHandPose: 0
-  SecondaryGrabBehavior: 0
-  OtherGrabbableMustBeGrabbed: {fileID: 0}
-  CollisionSpring: 3000
-  CollisionSlerp: 500
-  CanBeDropped: 1
-  CanBeSnappedToSnapZone: 1
-  LastGrabTime: 0
-  LastDropTime: 0
-  AddControllerVelocityOnDrop: 1
-  SecondaryGrabbable: {fileID: 0}
-  SecondHandLookSpeed: 40
-  SecondaryLookOffset: {x: 0, y: 0, z: 0}
-  SecondaryLookAtTransform: {fileID: 0}
-  LocalOffsetTransform: {fileID: 0}
-  MirrorOffsetForOtherHand: 1
-  GrabPoints: []
-  grabPointsAngleModifier: {x: 0, y: 0, z: 0}
 --- !u!114 &509243633845048705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,6 +63,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   snappedItem: {fileID: 509243633979982655}
+  snapState: 0
 --- !u!114 &509243633845048704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,18 +77,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   aboveCap: {fileID: 509243633946285683}
---- !u!114 &509243633845048706
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 509243633845048708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e03b2d1a082a9e4f976ec49c2a58f35, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &509243633845048766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -272,7 +215,6 @@ Transform:
   m_Children:
   - {fileID: 509243633936772204}
   - {fileID: 509243633845048709}
-  - {fileID: 509243633979982652}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -690,7 +632,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 509243633934920350}
+    m_TransformParent: {fileID: 509243633845048709}
     m_Modifications:
     - target: {fileID: 4067566342106519001, guid: 4e0b5518cb158c8439abbaae63b17d45,
         type: 3}
@@ -705,27 +647,27 @@ PrefabInstance:
     - target: {fileID: 4067566342106519012, guid: 4e0b5518cb158c8439abbaae63b17d45,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0011000037
+      value: -0.007999987
       objectReference: {fileID: 0}
     - target: {fileID: 4067566342106519012, guid: 4e0b5518cb158c8439abbaae63b17d45,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.2703
+      value: -0.0011000047
       objectReference: {fileID: 0}
     - target: {fileID: 4067566342106519012, guid: 4e0b5518cb158c8439abbaae63b17d45,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.0015000105
+      value: -0.001500011
       objectReference: {fileID: 0}
     - target: {fileID: 4067566342106519012, guid: 4e0b5518cb158c8439abbaae63b17d45,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 4067566342106519012, guid: 4e0b5518cb158c8439abbaae63b17d45,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 4067566342106519012, guid: 4e0b5518cb158c8439abbaae63b17d45,
         type: 3}
@@ -735,12 +677,12 @@ PrefabInstance:
     - target: {fileID: 4067566342106519012, guid: 4e0b5518cb158c8439abbaae63b17d45,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4067566342106519012, guid: 4e0b5518cb158c8439abbaae63b17d45,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4067566342106519012, guid: 4e0b5518cb158c8439abbaae63b17d45,
         type: 3}

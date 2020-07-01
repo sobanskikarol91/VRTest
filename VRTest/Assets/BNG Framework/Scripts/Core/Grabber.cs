@@ -356,7 +356,7 @@ namespace BNG
         }
 
         // See if we are inputting controls to grab an item
-        bool inputCheckGrab()
+        public bool inputCheckGrab()
         {
 
             // Can only hold one grabbable at a time
@@ -422,7 +422,7 @@ namespace BNG
         }
 
         // Release conditions are a little different than grab
-        bool inputCheckRelease()
+        public bool inputCheckRelease()
         {
 
             // Can't release anything we're not holding

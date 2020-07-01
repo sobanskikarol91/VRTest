@@ -6,7 +6,7 @@ using UnityEngine;
 
 public enum SnapState { None, IsWaitingForRelease, Snapped }
 
-public class SnapSlot : GrabbableEvents
+public class SnapSlot : MonoBehaviour
 {
     public bool IsEmpty => !IsFull;
     public bool IsFull => snappedItem;
@@ -28,9 +28,8 @@ public class SnapSlot : GrabbableEvents
     [SerializeField] Grabbable snappedItem;
     [SerializeField] SnapState snapState;
 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
         FindReferences();
         SnapOnBegining();
     }
@@ -63,22 +62,22 @@ public class SnapSlot : GrabbableEvents
         snapBegining = GetComponents<ISnapOnBeginning>();
     }
 
-    public override void OnGrab(Grabber grabber)
+    public void OnGrab()
     {
-        this.grabber = grabber;
         if (IsFull && AreUnsnapConditionsMet())
             Unsnap();
     }
 
-    public void OnGrabRelease(GrabbableEventArgs args)
+    public void OnRelease()
     {
         if (snappedItem == null) return;
-        Debug.Log("GrabRelease: " + args.grabber.HeldGrabbable);
+
         snapState = SnapState.Snapped;
         snappedItem.transform.SetParent(transform, true);
+        grabber.TryRelease();
         SetColliders(false);
         SetRigidbody(true);
-        Array.ForEach(snapReleases, s => s.OnRelease(args.grabbable));
+        Array.ForEach(snapReleases, s => s.OnRelease(snappedItem));
     }
 
     private void SetRigidbody(bool isKinematic)
@@ -146,7 +145,7 @@ public class SnapSlot : GrabbableEvents
         grabber = other.gameObject.GetComponent<Grabber>();
 
         if (grabber == null) return;
-        grabber.Drop += OnGrabRelease;
+
 
         Debug.Log(gameObject.name + " Enter Triger: " + other.gameObject.name, other.gameObject);
 
@@ -172,9 +171,36 @@ public class SnapSlot : GrabbableEvents
         grabber = other.gameObject.GetComponent<Grabber>();
         if (grabber == null) return;
         Debug.Log(gameObject.name + " Exit Triger: " + other.gameObject.name, other.gameObject);
-        grabber.Drop -= OnGrabRelease;
 
         if (snapState == SnapState.IsWaitingForRelease)
             SnapCanceled(null);
+    }
+
+    float currentGripForce = 0;
+    float previousGripForce = 0;
+    enum buttonState { increase, decrease, none };
+
+    buttonState currentState = buttonState.decrease;
+    buttonState previousState = buttonState.decrease;
+
+    void Update()
+    {
+        if (grabber == null) return;
+
+        currentGripForce = InputBridge.Instance.LeftGrip;
+
+        if (currentGripForce > previousGripForce)
+            currentState = buttonState.increase;
+        else if (currentGripForce < previousGripForce)
+            currentState = buttonState.decrease;
+
+        if (currentState == buttonState.decrease && previousState == buttonState.increase)
+            OnRelease();
+        else if (currentState == buttonState.increase && previousState == buttonState.decrease)
+            OnGrab();
+
+        previousState = currentState;
+        previousGripForce = currentGripForce;
+       // Debug.Log("Current state:" + currentState + " " + InputBridge.Instance.LeftGrip);
     }
 }
