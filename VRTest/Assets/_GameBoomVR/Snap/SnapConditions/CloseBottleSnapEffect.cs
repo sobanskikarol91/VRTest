@@ -1,7 +1,7 @@
 ﻿using BNG;
 using UnityEngine;
 
-public class CloseBottleSnapEffect : MonoBehaviour, ISnapAreaEnter, ISnapAreaExit, ISnapOnRelease, ISnapOnBeginning
+public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaExit, ISnapOnRelease, ISnapOnBeginning
 {
     [SerializeField] Transform aboveCap;
     private Grabbable grabbable;
