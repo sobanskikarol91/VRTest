@@ -669,7 +669,6 @@ namespace BNG
         public Vector3 GetGrabberAveragedAngularVelocity()
         {
             return transform.rotation * GetAveragedVector(previousAngularVelocities);
-
         }
 
         Vector3 GetAveragedVector(List<Vector3> vectors)
