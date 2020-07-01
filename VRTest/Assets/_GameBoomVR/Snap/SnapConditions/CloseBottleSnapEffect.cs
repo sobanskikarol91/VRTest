@@ -10,8 +10,7 @@ public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaE
 
 
     public void SnapEnter(Grabbable subject)
-    {
-        
+    {        
         grabbable = subject;
         MoveToTheBottle();
     }

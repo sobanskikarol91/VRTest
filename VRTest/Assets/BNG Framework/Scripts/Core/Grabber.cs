@@ -614,8 +614,9 @@ namespace BNG
         {
             if (HeldGrabbable != null && HeldGrabbable.CanBeDropped)
             {
-                Drop?.Invoke(new GrabbableEventArgs(HeldGrabbable, this));
+                GrabbableEventArgs args = new GrabbableEventArgs(HeldGrabbable.GetComponent<Grabbable>(), this);
                 HeldGrabbable.DropItem(this);
+                Drop?.Invoke(args);
             }
 
             // No longer try to bring flying grabbable to us
