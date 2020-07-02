@@ -28,7 +28,7 @@ public class SnapSlot : MonoBehaviour
     [SerializeField] SnapState snapState;
 
 
-    protected void Awake()
+    protected void Start()
     {
         FindReferences();
         SnapOnBegining();
