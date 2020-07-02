@@ -30,7 +30,7 @@ public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaE
         Debug.Log("Move");
         item.transform.SetParent(transform, true);
         iTween.MoveTo(item.gameObject, iTween.Hash("position", aboveCap.localPosition, "time", prepareToSpinTime, "islocal", true, "easetype", iTween.EaseType.easeInOutCirc, "oncomplete", nameof(PrepareAnimCompleted), "oncompletetarget", gameObject));
-        iTween.RotateTo(item.gameObject, iTween.Hash("rotation", new Vector3(0, 0, 90), "time", prepareToSpinTime, "easetype", iTween.EaseType.linear, "islocal", true));
+        iTween.RotateTo(item.gameObject, iTween.Hash("rotation", Vector3.zero, "time", prepareToSpinTime, "easetype", iTween.EaseType.linear, "islocal", true));
 
         item.GetComponent<Rigidbody>().isKinematic = true;
         item.GetComponentInChildren<Collider>().enabled = false;
@@ -49,7 +49,7 @@ public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaE
         Debug.Log("Spin");
         ownGrabbable.enabled = false;
         iTween.MoveTo(item.gameObject, iTween.Hash("position", Vector3.zero, "time", spinTime, "islocal", true, "oncomplete", nameof(CloseAnimCompleted), "oncompletetarget", gameObject));
-        iTween.RotateTo(item.gameObject, iTween.Hash("rotation", new Vector3(180, 0, 90), "time", spinTime, "easetype", iTween.EaseType.linear, "islocal", true));
+        iTween.RotateTo(item.gameObject, iTween.Hash("rotation", new Vector3(0, 180, 0), "time", spinTime, "easetype", iTween.EaseType.linear, "islocal", true));
     }
 
     void CloseAnimCompleted()
