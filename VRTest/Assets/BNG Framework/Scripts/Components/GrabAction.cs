@@ -24,6 +24,7 @@ namespace BNG {
             }
 
             // Never hold this item
+            //Debug.Log("never hold this iten");
             g.DropItem(grabber, false, false);
 
             // Don't grab this if we are currently grabbing / remote grabbing a different item

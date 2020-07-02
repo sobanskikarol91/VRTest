@@ -6,7 +6,7 @@ using UnityEngine;
 
 public enum SnapState { None, IsWaitingForRelease, Snapped }
 
-public class SnapSlot : GrabbableEvents
+public class SnapSlot : MonoBehaviour
 {
     public bool IsEmpty => !IsFull;
     public bool IsFull => snappedItem;
@@ -28,9 +28,8 @@ public class SnapSlot : GrabbableEvents
     [SerializeField] Grabbable snappedItem;
     [SerializeField] SnapState snapState;
 
-    protected override void Awake()
+    protected  void Awake()
     {
-        base.Awake();
         FindReferences();
         SnapOnBegining();
     }
@@ -63,7 +62,7 @@ public class SnapSlot : GrabbableEvents
         snapBegining = GetComponents<ISnapOnBeginning>();
     }
 
-    public override void OnGrab(Grabber grabber)
+    public void OnGrab()
     {
         this.grabber = grabber;
         if (IsFull && AreUnsnapConditionsMet())
@@ -74,6 +73,11 @@ public class SnapSlot : GrabbableEvents
     {
         if (snappedItem == null) return;
         Debug.Log("GrabRelease: " + args.grabber.HeldGrabbable);
+        if (args.grabber == this)
+        {
+            Debug.Log("to slot wiec wychodze");
+            return;
+        }
         snapState = SnapState.Snapped;
         snappedItem.transform.SetParent(transform, true);
         SetColliders(false);
@@ -143,9 +147,10 @@ public class SnapSlot : GrabbableEvents
 
     private void OnTriggerEnter(Collider other)
     {
-        grabber = other.gameObject.GetComponent<Grabber>();
+        Grabber testedGrabber = other.gameObject.GetComponent<Grabber>();
+        if (testedGrabber == null) return;
+        grabber = testedGrabber;
 
-        if (grabber == null) return;
         grabber.Drop += OnGrabRelease;
 
         Debug.Log(gameObject.name + " Enter Triger: " + other.gameObject.name, other.gameObject);
@@ -169,8 +174,9 @@ public class SnapSlot : GrabbableEvents
 
     private void OnTriggerExit(Collider other)
     {
-        grabber = other.gameObject.GetComponent<Grabber>();
-        if (grabber == null) return;
+        Grabber testedGrabber = other.gameObject.GetComponent<Grabber>();
+        if (testedGrabber == null) return;
+        grabber = testedGrabber;
         Debug.Log(gameObject.name + " Exit Triger: " + other.gameObject.name, other.gameObject);
         grabber.Drop -= OnGrabRelease;
 
