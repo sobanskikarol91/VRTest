@@ -11,7 +11,6 @@ public class SnapSlot : MonoBehaviour
     public bool IsEmpty => !IsFull;
     public bool IsFull => snappedItem;
 
-
     private ISnapCondition[] snapConditions;
     private IUnSnapCondition[] unsnapConditions;
     private ISnapAreaExit[] snapAreaExits;
@@ -28,7 +27,8 @@ public class SnapSlot : MonoBehaviour
     [SerializeField] Grabbable snappedItem;
     [SerializeField] SnapState snapState;
 
-    protected  void Awake()
+
+    protected void Awake()
     {
         FindReferences();
         SnapOnBegining();
@@ -64,7 +64,6 @@ public class SnapSlot : MonoBehaviour
 
     public void OnGrab()
     {
-        this.grabber = grabber;
         if (IsFull && AreUnsnapConditionsMet())
             Unsnap();
     }
@@ -179,6 +178,12 @@ public class SnapSlot : MonoBehaviour
         grabber = testedGrabber;
         Debug.Log(gameObject.name + " Exit Triger: " + other.gameObject.name, other.gameObject);
         grabber.Drop -= OnGrabRelease;
+
+        if (grabber.HeldGrabbable)
+        {
+            SetColliders(true);
+          //  grabber.HeldGrabbable.transform.SetParent(grabber.transform);
+        }
 
         if (snapState == SnapState.IsWaitingForRelease)
             SnapCanceled(null);
