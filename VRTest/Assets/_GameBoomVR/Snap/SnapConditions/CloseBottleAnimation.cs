@@ -1,12 +1,14 @@
 ﻿using BNG;
 using UnityEngine;
 
-public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaExit, ISnapOnRelease, ISnapOnBeginning
+public class CloseBottleAnimation : GrabbableEvents, ISnapAreaEnter, ISnapAreaExit, ISnapOnRelease, ISnapOnBeginning
 {
-    [SerializeField] Transform aboveCap;
+    [SerializeField] Transform prepareToReleasePos;
+
     private Grabbable item, ownGrabbable;
     private readonly float prepareToSpinTime = .2f;
     private readonly float spinTime = .5f;
+
 
     protected override void Awake()
     {
@@ -29,7 +31,7 @@ public class CloseBottleSnapEffect : GrabbableEvents, ISnapAreaEnter, ISnapAreaE
     {
         Debug.Log("Move");
         item.transform.SetParent(transform, true);
-        iTween.MoveTo(item.gameObject, iTween.Hash("position", aboveCap.localPosition, "time", prepareToSpinTime, "islocal", true, "easetype", iTween.EaseType.easeInOutCirc, "oncomplete", nameof(PrepareAnimCompleted), "oncompletetarget", gameObject));
+        iTween.MoveTo(item.gameObject, iTween.Hash("position", prepareToReleasePos.localPosition, "time", prepareToSpinTime, "islocal", true, "easetype", iTween.EaseType.easeInOutCirc, "oncomplete", nameof(PrepareAnimCompleted), "oncompletetarget", gameObject));
         iTween.RotateTo(item.gameObject, iTween.Hash("rotation", Vector3.zero, "time", prepareToSpinTime, "easetype", iTween.EaseType.linear, "islocal", true));
 
         item.GetComponent<Rigidbody>().isKinematic = true;
