@@ -180,10 +180,7 @@ public class SnapSlot : MonoBehaviour
         grabber.Drop -= OnGrabRelease;
 
         if (grabber.HeldGrabbable)
-        {
             SetColliders(true);
-          //  grabber.HeldGrabbable.transform.SetParent(grabber.transform);
-        }
 
         if (snapState == SnapState.IsWaitingForRelease)
             SnapCanceled(null);
